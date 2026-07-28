@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Flip Scanner — Price &amp; Negotiate</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#181b22; --card2:#1f232c; --line:#2a2f3a;
+    --text:#f0f2f5; --sub:#9aa3b2; --accent:#3ddc84; --accent2:#ffb020;
+    --danger:#ff5c5c; --blue:#4c9aff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:40px;}
+  header{padding:16px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--line);}
+  header h1{font-size:18px;margin:0 0 2px;display:flex;align-items:center;gap:8px;}
+  header p{margin:0;color:var(--sub);font-size:12px;}
+  .gear{margin-left:auto;background:none;border:none;color:var(--sub);font-size:20px;cursor:pointer;}
+  .row{display:flex;align-items:center;}
+  main{max-width:480px;margin:0 auto;padding:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:0 0 10px;}
+  #shot{width:100%;border-radius:10px;display:none;margin-bottom:10px;max-height:280px;object-fit:cover;}
+  .capture-row{display:flex;gap:10px;}
+  label.btn{flex:1;text-align:center;padding:14px;border-radius:12px;font-weight:600;cursor:pointer;font-size:15px;}
+  .btn-camera{background:var(--accent);color:#062012;}
+  .btn-file{background:var(--card2);color:var(--text);border:1px solid var(--line);}
+  input[type=file]{display:none;}
+  textarea, input[type=text], input[type=password]{
+    width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:10px;font-size:14px;font-family:inherit;
+  }
+  select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-size:14px;}
+  .analyze-btn{width:100%;padding:16px;border:none;border-radius:12px;background:var(--blue);color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:12px;}
+  .analyze-btn:disabled{opacity:.5;}
+  .spinner{display:none;text-align:center;color:var(--sub);font-size:13px;margin-top:10px;}
+  .spinner.show{display:block;}
+  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .price-box{background:var(--card2);border-radius:10px;padding:12px;text-align:center;}
+  .price-box .label{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;}
+  .price-box .val{font-size:22px;font-weight:700;margin-top:4px;}
+  .price-box.sell .val{color:var(--accent);}
+  .price-box.buy .val{color:var(--accent2);}
+  ul.tips{margin:0;padding-left:18px;}
+  ul.tips li{margin-bottom:8px;font-size:14px;line-height:1.4;}
+  .subtle{color:var(--sub);font-size:12px;margin-top:6px;}
+  .comp{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line);}
+  .comp:last-child{border-bottom:none;}
+  .comp .src{color:var(--sub);font-size:11px;}
+  .listing-field{margin-bottom:10px;}
+  .listing-field .flabel{font-size:11px;color:var(--sub);margin-bottom:4px;text-transform:uppercase;}
+  .action-row{display:flex;gap:10px;margin-top:10px;}
+  .action-btn{flex:1;padding:12px;border-radius:10px;border:none;font-weight:600;font-size:14px;cursor:pointer;}
+  .action-btn.copy{background:var(--card2);color:var(--text);border:1px solid var(--line);}
+  .action-btn.post{background:#1877F2;color:#fff;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;}
+  .toast.show{opacity:1;}
+  .error{background:#2a1414;border:1px solid var(--danger);color:#ffb3b3;border-radius:10px;padding:12px;font-size:13px;margin-bottom:14px;}
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;align-items:center;justify-content:center;padding:20px;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:400px;width:100%;}
+  .modal h3{margin-top:0;font-size:16px;}
+  .modal p{color:var(--sub);font-size:13px;line-height:1.5;}
+  .modal .modal-actions{display:flex;gap:10px;margin-top:14px;}
+  .modal .modal-actions button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:600;cursor:pointer;}
+  .save-key{background:var(--accent);color:#062012;}
+  .cancel-key{background:var(--card2);color:var(--text);border:1px solid var(--line);}
+  a.link{color:var(--blue);}
+  .note{font-size:12px;color:var(--sub);line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header class="row">
+  <div>
+    <h1>📸 Flip Scanner</h1>
+    <p>Photo → price → negotiate → list</p>
+  </div>
+  <button class="gear" onclick="openSettings()">⚙️</button>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>1. Take or upload a photo</h2>
+    <img id="shot" alt="preview">
+    <div class="capture-row">
+      <label class="btn btn-camera" for="cameraInput">📷 Camera</label>
+      <label class="btn btn-file" for="fileInput">🖼️ Gallery</label>
+    </div>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment">
+    <input type="file" id="fileInput" accept="image/*">
+
+    <div style="margin-top:12px;">
+      <div class="listing-field">
+        <div class="flabel">Any details worth mentioning? (optional — brand, size, flaws, why you're pricing it)</div>
+        <textarea id="extraNotes" rows="2" placeholder="e.g. barely used, small scratch on back, comes with box"></textarea>
+      </div>
+    </div>
+
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()" disabled>Evaluate price</button>
+    <div class="spinner" id="spinner">Identifying item &amp; checking comps…</div>
+  </div>
+
+  <div id="errorBox"></div>
+  <div id="results"></div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h3>Anthropic API key</h3>
+    <p>This app runs entirely in your browser and calls the Claude API directly with your own key — nothing goes through a third-party server. Get a key at <span class="link">console.anthropic.com</span>. Your key is saved only in this browser (localStorage).</p>
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+    <div class="modal-actions">
+      <button class="cancel-key" onclick="closeSettings()">Cancel</button>
+      <button class="save-key" onclick="saveKey()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY_STORAGE = 'flipscanner_api_key';
+let imageBase64 = null;
+let imageMediaType = null;
+let lastResult = null;
+
+function openSettings(){
+  document.getElementById('apiKeyInput').value = localStorage.getItem(KEY_STORAGE) || '';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings(){ document.getElementById('settingsModal').classList.remove('show'); }
+function saveKey(){
+  const v = document.getElementById('apiKeyInput').value.trim();
+  if(v) localStorage.setItem(KEY_STORAGE, v);
+  closeSettings();
+  toast('API key saved');
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+['cameraInput','fileInput'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    imageMediaType = file.type || 'image/jpeg';
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const dataUrl = ev.target.result;
+      imageBase64 = dataUrl.split(',')[1];
+      const img = document.getElementById('shot');
+      img.src = dataUrl;
+      img.style.display = 'block';
+      document.getElementById('analyzeBtn').disabled = false;
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('errorBox').innerHTML = '';
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+function showError(msg){
+  document.getElementById('errorBox').innerHTML = `<div class="error">${msg}</div>`;
+}
+
+async function analyze(){
+  const apiKey = localStorage.getItem(KEY_STORAGE);
+  if(!apiKey){ openSettings(); return; }
+  if(!imageBase64){ showError('Add a photo first.'); return; }
+
+  document.getElementById('errorBox').innerHTML = '';
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('spinner').classList.add('show');
+  document.getElementById('analyzeBtn').disabled = true;
+
+  const notes = document.getElementById('extraNotes').value.trim();
+
+  const prompt = `You are a resale/flipping pricing expert who has priced thousands of items on Facebook Marketplace, eBay, and Craigslist.
+
+Look at the attached photo and identify the specific item (brand, model, category) as precisely as you can. If genuinely uncertain, give your best guess and say so.
+
+${notes ? 'Seller notes: ' + notes : 'No extra notes provided — assess condition from the photo alone.'}
+
+If you have web search available, search for a few real current or recently-sold listings of this exact or very similar item on Facebook Marketplace, eBay (sold listings), or OfferUp to ground your price in actual market data. Prefer sold/completed prices over active asking prices when possible.
+
+Then respond with ONLY a single JSON object (no markdown fences, no commentary before or after) with this exact shape:
+
+{
+  "item_identified": "string, specific name of item",
+  "condition_assessment": "string, 1-2 sentences on condition based on the photo",
+  "confidence": "high | medium | low",
+  "market_price_low": number,
+  "market_price_high": number,
+  "quick_sale_price": number,
+  "max_sale_price": number,
+  "recommended_buy_offer": number,
+  "walk_away_buy_price": number,
+  "negotiation_tips_selling": ["string", "string", "string"],
+  "negotiation_tips_buying": ["string", "string", "string"],
+  "listing_title": "string, ready to paste",
+  "listing_description": "string, ready to paste, 2-4 sentences, honest and appealing",
+  "category": "string, Facebook Marketplace category",
+  "comps_found": [{"title": "string", "price": "string", "source": "string"}]
+}
+
+Field meanings:
+- market_price_low/high: realistic range this item sells for used, in this condition.
+- quick_sale_price: price to list at for a fast sale (this week).
+- max_sale_price: price to list at if willing to wait for the right buyer.
+- recommended_buy_offer: if the user is trying to BUY this item (e.g. from a seller) to resell it, the offer that leaves good profit margin.
+- walk_away_buy_price: the highest price still worth paying to flip this profitably.
+- comps_found: leave as an empty array if you did not actually find real comps — do not fabricate specific listings.
+
+All prices are USD numbers only (no $ signs, no commas).`;
+
+  const basePayload = {
+    model: "claude-sonnet-5",
+    max_tokens: 2000,
+    messages: [{
+      role: "user",
+      content: [
+        { type: "image", source: { type: "base64", media_type: imageMediaType, data: imageBase64 } },
+        { type: "text", text: prompt }
+      ]
+    }]
+  };
+
+  async function callClaude(withSearch){
+    const payload = Object.assign({}, basePayload);
+    if(withSearch){
+      payload.tools = [{ type: "web_search_20250305", name: "web_search", max_uses: 4 }];
+    }
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify(payload)
+    });
+    if(!resp.ok){
+      const errText = await resp.text();
+      throw new Error(`${resp.status}: ${errText}`);
+    }
+    return resp.json();
+  }
+
+  try {
+    let data;
+    let usedSearch = true;
+    try {
+      data = await callClaude(true);
+    } catch(e){
+      // retry without web_search tool in case it's unavailable for this key/plan
+      usedSearch = false;
+      data = await callClaude(false);
+    }
+
+    const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+    const fullText = textBlocks.join('\n').trim();
+
+    const firstBrace = fullText.indexOf('{');
+    const lastBrace = fullText.lastIndexOf('}');
+    if(firstBrace === -1 || lastBrace === -1) throw new Error("Couldn't find JSON in the model's response:\n\n" + fullText);
+
+    const jsonStr = fullText.slice(firstBrace, lastBrace + 1);
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch(parseErr){
+      throw new Error("Got a response but couldn't parse it as JSON. Raw response:\n\n" + fullText);
+    }
+
+    lastResult = parsed;
+    renderResult(parsed, usedSearch);
+  } catch(err){
+    showError('Something went wrong: ' + (err.message || err));
+  } finally {
+    document.getElementById('spinner').classList.remove('show');
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+}
+
+function renderResult(r, usedSearch){
+  const compsHtml = (r.comps_found && r.comps_found.length)
+    ? r.comps_found.map(c => `<div class="comp"><span>${escapeHtml(c.title)}</span><span>${escapeHtml(c.price)}<div class="src">${escapeHtml(c.source||'')}</div></span></div>`).join('')
+    : `<div class="subtle">${usedSearch ? 'No specific comps found — estimate based on model knowledge.' : 'Live comp search unavailable on this API key/plan — estimate based on model knowledge only.'}</div>`;
+
+  const html = `
+    <div class="card">
+      <h2>Item identified</h2>
+      <div style="font-size:16px;font-weight:600;">${escapeHtml(r.item_identified||'Unknown item')}</div>
+      <div class="subtle">${escapeHtml(r.condition_assessment||'')} · confidence: ${escapeHtml(r.confidence||'n/a')}</div>
+    </div>
+
+    <div class="card">
+      <h2>Sell price</h2>
+      <div class="price-grid">
+        <div class="price-box sell"><div class="label">Quick sale</div><div class="val">$${fmt(r.quick_sale_price)}</div></div>
+        <div class="price-box sell"><div class="label">Max (patient)</div><div class="val">$${fmt(r.max_sale_price)}</div></div>
+      </div>
+      <div class="subtle">Market range: $${fmt(r.market_price_low)}–$${fmt(r.market_price_high)}</div>
+    </div>
+
+    <div class="card">
+      <h2>Buy price (if acquiring to flip)</h2>
+      <div class="price-grid">
+        <div class="price-box buy"><div class="label">Opening offer</div><div class="val">$${fmt(r.recommended_buy_offer)}</div></div>
+        <div class="price-box buy"><div class="label">Walk-away max</div><div class="val">$${fmt(r.walk_away_buy_price)}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Comps</h2>
+      ${compsHtml}
+    </div>
+
+    <div class="card">
+      <h2>Negotiation — selling it</h2>
+      <ul class="tips">${(r.negotiation_tips_selling||[]).map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card">
+      <h2>Negotiation — buying it</h2>
+      <ul class="tips">${(r.negotiation_tips_buying||[]).map(t=>`<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card">
+      <h2>Listing draft</h2>
+      <div class="listing-field">
+        <div class="flabel">Title</div>
+        <input type="text" id="listTitle" value="${escapeAttr(r.listing_title||'')}">
+      </div>
+      <div class="listing-field">
+        <div class="flabel">Description</div>
+        <textarea id="listDesc" rows="4">${escapeHtml(r.listing_description||'')}</textarea>
+      </div>
+      <div class="listing-field">
+        <div class="flabel">Price</div>
+        <input type="text" id="listPrice" value="${fmt(r.quick_sale_price)}">
+      </div>
+      <div class="listing-field">
+        <div class="flabel">Category</div>
+        <input type="text" id="listCategory" value="${escapeAttr(r.category||'')}">
+      </div>
+      <div class="action-row">
+        <button class="action-btn copy" onclick="copyListing()">Copy listing text</button>
+        <button class="action-btn post" onclick="postToFacebook()">Post to FB Marketplace</button>
+      </div>
+      <div class="note">Facebook doesn't allow outside apps to auto-publish listings, so this copies your title/description/price to the clipboard and opens Marketplace's "create listing" page — paste in and you're done in a few taps.</div>
+    </div>
+  `;
+  document.getElementById('results').innerHTML = html;
+}
+
+function copyListing(){
+  const title = document.getElementById('listTitle').value;
+  const desc = document.getElementById('listDesc').value;
+  const price = document.getElementById('listPrice').value;
+  const category = document.getElementById('listCategory').value;
+  const text = `${title}\n\nPrice: $${price}\nCategory: ${category}\n\n${desc}`;
+  navigator.clipboard.writeText(text).then(()=>toast('Listing copied to clipboard')).catch(()=>toast('Could not copy — select text manually'));
+}
+
+function postToFacebook(){
+  copyListing();
+  window.open('https://www.facebook.com/marketplace/create/item', '_blank');
+}
+
+function fmt(n){
+  if(n === undefined || n === null || isNaN(n)) return '—';
+  return Number(n).toLocaleString('en-US', {maximumFractionDigits:0});
+}
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
+
+// prompt for key on first load if missing
+window.addEventListener('load', ()=>{
+  if(!localStorage.getItem(KEY_STORAGE)){
+    setTimeout(openSettings, 300);
+  }
+});
+</script>
+</body>
+</html>

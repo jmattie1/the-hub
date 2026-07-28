@@ -79,6 +79,18 @@
   .import-row{display:flex;gap:10px;margin-bottom:10px;}
   .file-btn{flex:1;text-align:center;padding:12px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);cursor:pointer;font-family:inherit;font-size:15px;}
   input[type=file]{display:none;}
+  .dialpad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;margin:14px auto 0;}
+  .dialpad-grid button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
+  .dialpad-grid button .digit{font-size:22px;font-family:'Architects Daughter',cursive;}
+  .dialpad-grid button .letters{font-size:8px;letter-spacing:1.5px;color:var(--ink-soft);font-family:-apple-system,sans-serif;margin-top:2px;}
+  .dialpad-actions{display:flex;align-items:center;justify-content:center;gap:24px;margin-top:18px;}
+  .dialpad-actions .spacer-btn{width:52px;height:52px;}
+  .call-btn{width:64px;height:64px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .backspace-btn{width:52px;height:52px;border-radius:50%;background:var(--paper2);border:2px solid var(--ink);color:var(--ink);font-size:18px;cursor:pointer;}
+  .embed-view{padding:0 !important;}
+  .embed-bar{display:flex;align-items:center;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--paper);}
+  .embed-bar .back{margin:0;padding:0;}
+  .embed-frame{width:100%;border:none;display:block;height:calc(100vh - 46px);}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:2px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
   .toast.show{opacity:1;}
 </style>
@@ -138,7 +150,25 @@
         <svg viewBox="0 0 48 48"><path d="M10 26 C10 15 16 8 24 8 C32 8 38 15 38 26" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><rect x="7" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="33" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
         <span>Audible</span>
       </button>
+      <button class="tile" onclick="openView('embed-scanner')">
+        <svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="24" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 14 L19 9 H29 L32 14" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="26" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
+        <span>Price Scanner</span>
+      </button>
+      <button class="tile" onclick="openView('embed-money')">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 14 V34 M29 18 C29 18 27 16 23 16 C20 16 18 17.5 18 20 C18 25 30 22 30 28 C30 30.5 27.5 32 24 32 C20 32 18 30 18 30" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Money</span>
+      </button>
     </div>
+  </div>
+
+  <!-- EMBEDDED APPS -->
+  <div class="view embed-view" id="view-embed-scanner">
+    <div class="embed-bar"><button class="back" onclick="openView('home')">‹ back</button></div>
+    <iframe class="embed-frame" src="flip-price-scanner.html"></iframe>
+  </div>
+  <div class="view embed-view" id="view-embed-money">
+    <div class="embed-bar"><button class="back" onclick="openView('home')">‹ back</button></div>
+    <iframe class="embed-frame" src="money-tracker.html"></iframe>
   </div>
 
   <!-- PHONE -->
@@ -146,21 +176,26 @@
     <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <div class="calc-display num" id="dialDisplay">&nbsp;</div>
-      <div class="calc-grid">
-        <button onclick="dialDigit('1')">1</button>
-        <button onclick="dialDigit('2')">2</button>
-        <button onclick="dialDigit('3')">3</button>
-        <button onclick="dialDigit('4')">4</button>
-        <button onclick="dialDigit('5')">5</button>
-        <button onclick="dialDigit('6')">6</button>
-        <button onclick="dialDigit('7')">7</button>
-        <button onclick="dialDigit('8')">8</button>
-        <button onclick="dialDigit('9')">9</button>
-        <button onclick="dialDigit('*')">*</button>
-        <button onclick="dialDigit('0')">0</button>
-        <button onclick="dialDigit('#')">#</button>
-        <button onclick="dialBackspace()">⌫</button>
-        <button class="op wide" onclick="dialCall()">call</button>
+      <div class="dialpad-grid">
+        <button onclick="dialDigit('1')"><span class="digit">1</span></button>
+        <button onclick="dialDigit('2')"><span class="digit">2</span><span class="letters">ABC</span></button>
+        <button onclick="dialDigit('3')"><span class="digit">3</span><span class="letters">DEF</span></button>
+        <button onclick="dialDigit('4')"><span class="digit">4</span><span class="letters">GHI</span></button>
+        <button onclick="dialDigit('5')"><span class="digit">5</span><span class="letters">JKL</span></button>
+        <button onclick="dialDigit('6')"><span class="digit">6</span><span class="letters">MNO</span></button>
+        <button onclick="dialDigit('7')"><span class="digit">7</span><span class="letters">PQRS</span></button>
+        <button onclick="dialDigit('8')"><span class="digit">8</span><span class="letters">TUV</span></button>
+        <button onclick="dialDigit('9')"><span class="digit">9</span><span class="letters">WXYZ</span></button>
+        <button onclick="dialDigit('*')"><span class="digit">*</span></button>
+        <button onclick="dialDigit('0')"><span class="digit">0</span><span class="letters">+</span></button>
+        <button onclick="dialDigit('#')"><span class="digit">#</span></button>
+      </div>
+      <div class="dialpad-actions">
+        <div class="spacer-btn"></div>
+        <button class="call-btn" onclick="dialCall()">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6 3 C6 3 5 3.5 5 5 C5 11 13 19 19 19 C20.5 19 21 18 21 18 L18 14 C18 14 16.5 15.5 15.5 15 C13 13.5 10.5 11 9 8.5 C8.5 7.5 10 6 10 6 Z" fill="var(--paper)"/></svg>
+        </button>
+        <button class="backspace-btn" onclick="dialBackspace()">⌫</button>
       </div>
       <div class="caption">Dials through your phone's real calling — a web app can't place the call itself, so this hands off to the native call screen with the number ready to go.</div>
     </section>
