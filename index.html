@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>the hub</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
+<style>
+  :root{
+    --paper:#ece8dd; --paper2:#e2ddce; --ink:#232323; --ink-soft:#6b6659;
+    --line:#c9c3b2; --danger:#8a3b2e;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Architects Daughter', cursive;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:20px;
+  }
+  .num{font-family:-apple-system,Menlo,monospace;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 10px;border-bottom:2px solid var(--ink);}
+  header h1{font-size:22px;margin:0;font-weight:400;}
+  header .time{font-size:14px;color:var(--ink-soft);white-space:nowrap;}
+  main{max-width:480px;margin:0 auto;padding:18px;}
+  .view{display:none;}
+  .view.active{display:block;}
+  .back{background:none;border:none;color:var(--ink);font-size:16px;margin-bottom:14px;cursor:pointer;font-family:inherit;padding:6px 0;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+  .tile{
+    background:var(--paper2);border:2px solid var(--ink);border-radius:2px;
+    padding:20px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
+    cursor:pointer;font-family:inherit;color:var(--ink);
+  }
+  .tile svg{width:40px;height:40px;}
+  .tile span{font-size:16px;}
+  .tile:active{background:var(--paper);}
+  section.card{border:2px solid var(--ink);border-radius:2px;padding:16px;margin-bottom:16px;background:var(--paper2);}
+  section.card h2{margin:0 0 10px;font-size:18px;font-weight:400;border-bottom:1px solid var(--line);padding-bottom:8px;}
+  .list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);}
+  .list-item:last-child{border-bottom:none;}
+  .list-item .name{font-size:16px;}
+  .list-item .phone{font-size:12px;color:var(--ink-soft);font-family:'Architects Daughter',cursive;}
+  .icon-btn{background:none;border:1px solid var(--ink);border-radius:2px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:13px;margin-left:6px;color:var(--ink);}
+  .icon-btn.danger{border-color:var(--danger);color:var(--danger);}
+  input[type=text], input[type=tel], input[type=number], textarea{
+    width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:2px;
+    padding:10px;font-size:16px;font-family:inherit;color:var(--ink);margin-bottom:10px;
+  }
+  textarea{resize:vertical;min-height:70px;}
+  .btn{width:100%;padding:12px;border:2px solid var(--ink);border-radius:2px;background:var(--ink);color:var(--paper);font-size:16px;font-family:inherit;cursor:pointer;}
+  .btn.secondary{background:var(--paper2);color:var(--ink);}
+  .empty{color:var(--ink-soft);font-size:14px;padding:14px 0;text-align:center;}
+  .note-item{border:1px dashed var(--line);border-radius:2px;padding:10px;margin-bottom:8px;}
+  .note-item .note-text{font-size:15px;white-space:pre-wrap;margin-bottom:6px;}
+  .note-actions{display:flex;justify-content:flex-end;}
+  .calc-display{background:var(--ink);color:var(--paper);font-family:Menlo,monospace;font-size:34px;text-align:right;padding:16px;border-radius:2px;margin-bottom:12px;min-height:50px;word-break:break-all;}
+  .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .calc-grid button{padding:18px 0;font-size:20px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);color:var(--ink);font-family:'Architects Daughter',cursive;cursor:pointer;}
+  .calc-grid button.op{background:var(--ink);color:var(--paper);}
+  .calc-grid button.wide{grid-column:span 2;}
+  .clock-big{font-family:Menlo,monospace;font-size:38px;text-align:center;margin:10px 0 4px;white-space:nowrap;}
+  .clock-date{text-align:center;color:var(--ink-soft);font-size:15px;margin-bottom:20px;}
+  .timer-display{font-family:Menlo,monospace;font-size:44px;text-align:center;margin:10px 0 16px;}
+  .timer-controls{display:flex;gap:10px;}
+  .caption{font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
+  .game-status{text-align:center;font-size:16px;margin:8px 0;}
+  .ttt-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:10px auto;}
+  .ttt-board button{aspect-ratio:1;font-size:32px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);color:var(--ink);font-family:Menlo,monospace;cursor:pointer;}
+  .ttt-board button:disabled{opacity:.9;}
+  .mem-board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:10px auto;}
+  .mem-board button{aspect-ratio:1;font-size:24px;border:2px solid var(--ink);border-radius:2px;background:var(--ink);color:var(--ink);cursor:pointer;}
+  .mem-board button.flipped, .mem-board button.matched{background:var(--paper2);color:var(--ink);}
+  .rps-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .rps-row button{flex:1;min-width:90px;}
+  .import-row{display:flex;gap:10px;margin-bottom:10px;}
+  .file-btn{flex:1;text-align:center;padding:12px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);cursor:pointer;font-family:inherit;font-size:15px;}
+  input[type=file]{display:none;}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:2px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>the hub</h1>
+  <div class="time num" id="headerClock"></div>
+</header>
+
+<main>
+
+  <div class="view active" id="view-home">
+    <div class="grid">
+      <button class="tile" onclick="openView('phone')">
+        <svg viewBox="0 0 48 48"><rect x="14" y="6" width="20" height="36" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="21" y1="35" x2="27" y2="35" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="20" cy="14" r="1.6" fill="var(--ink)"/><circle cx="24" cy="14" r="1.6" fill="var(--ink)"/><circle cx="28" cy="14" r="1.6" fill="var(--ink)"/><circle cx="20" cy="20" r="1.6" fill="var(--ink)"/><circle cx="24" cy="20" r="1.6" fill="var(--ink)"/><circle cx="28" cy="20" r="1.6" fill="var(--ink)"/><circle cx="20" cy="26" r="1.6" fill="var(--ink)"/><circle cx="24" cy="26" r="1.6" fill="var(--ink)"/><circle cx="28" cy="26" r="1.6" fill="var(--ink)"/></svg>
+        <span>Phone</span>
+      </button>
+      <button class="tile" onclick="openView('text')">
+        <svg viewBox="0 0 48 48"><path d="M24 8 C13 8 6 15 6 23 C6 28 8.5 32 12.5 34.5 L11 41 L18 37.3 C20 37.8 22 38 24 38 C35 38 42 31 42 23 C42 15 35 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="23" r="1.8" fill="var(--ink)"/><circle cx="24" cy="23" r="1.8" fill="var(--ink)"/><circle cx="32" cy="23" r="1.8" fill="var(--ink)"/></svg>
+        <span>Text</span>
+      </button>
+      <button class="tile" onclick="openView('facetime')">
+        <svg viewBox="0 0 48 48"><rect x="6" y="14" width="24" height="20" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M30 21 L42 15 L42 33 L30 27 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        <span>FaceTime</span>
+      </button>
+      <button class="tile" onclick="openView('contacts')">
+        <svg viewBox="0 0 48 48"><path d="M16 8 C16 8 13 9 13 13 C13 20 27 34 34 34 C38 34 39 31 39 31 L33 24 C33 24 31 27 29 26 C25 24 21 20 20 17 C19 15 22 13 22 13 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        <span>Contacts</span>
+      </button>
+      <button class="tile" onclick="openView('notes')">
+        <svg viewBox="0 0 48 48"><rect x="11" y="7" width="26" height="34" rx="1" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="16" y1="16" x2="32" y2="16" stroke="var(--ink)" stroke-width="2"/><line x1="16" y1="23" x2="32" y2="23" stroke="var(--ink)" stroke-width="2"/><line x1="16" y1="30" x2="27" y2="30" stroke="var(--ink)" stroke-width="2"/></svg>
+        <span>Notes</span>
+      </button>
+      <button class="tile" onclick="openView('calculator')">
+        <svg viewBox="0 0 48 48"><rect x="10" y="6" width="28" height="36" rx="1" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="14" y="10" width="20" height="7" fill="none" stroke="var(--ink)" stroke-width="1.8"/><circle cx="17" cy="24" r="1.6" fill="var(--ink)"/><circle cx="24" cy="24" r="1.6" fill="var(--ink)"/><circle cx="31" cy="24" r="1.6" fill="var(--ink)"/><circle cx="17" cy="31" r="1.6" fill="var(--ink)"/><circle cx="24" cy="31" r="1.6" fill="var(--ink)"/><circle cx="31" cy="31" r="1.6" fill="var(--ink)"/><circle cx="17" cy="37" r="1.6" fill="var(--ink)"/><circle cx="24" cy="37" r="1.6" fill="var(--ink)"/></svg>
+        <span>Calculator</span>
+      </button>
+      <button class="tile" onclick="openView('clock')">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="24" y1="24" x2="24" y2="13" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><line x1="24" y1="24" x2="31" y2="27" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span>Clock / Timer</span>
+      </button>
+      <button class="tile" onclick="openView('marketplace')">
+        <svg viewBox="0 0 48 48"><path d="M9 9 L23 9 L39 25 L25 39 L9 23 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="16" r="2.2" fill="var(--ink)"/></svg>
+        <span>Marketplace</span>
+      </button>
+      <button class="tile" onclick="openMessenger()">
+        <svg viewBox="0 0 48 48"><path d="M24 8 C13 8 6 15 6 24 C6 29 8.5 33 12.5 35.5 L11 42 L18 38.3 C20 38.8 22 39 24 39 C35 39 42 32 42 24 C42 15 35 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 26 L21 19 L26 24 L33 17" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Messenger</span>
+      </button>
+      <button class="tile" onclick="openView('games')">
+        <svg viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="17" cy="17" r="2" fill="var(--ink)"/><circle cx="31" cy="17" r="2" fill="var(--ink)"/><circle cx="24" cy="24" r="2" fill="var(--ink)"/><circle cx="17" cy="31" r="2" fill="var(--ink)"/><circle cx="31" cy="31" r="2" fill="var(--ink)"/></svg>
+        <span>Games</span>
+      </button>
+      <button class="tile" onclick="openAudible()">
+        <svg viewBox="0 0 48 48"><path d="M10 26 C10 15 16 8 24 8 C32 8 38 15 38 26" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><rect x="7" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="33" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
+        <span>Audible</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="view" id="view-phone">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <div class="calc-display num" id="dialDisplay">&nbsp;</div>
+      <div class="calc-grid">
+        <button onclick="dialDigit('1')">1</button>
+        <button onclick="dialDigit('2')">2</button>
+        <button onclick="dialDigit('3')">3</button>
+        <button onclick="dialDigit('4')">4</button>
+        <button onclick="dialDigit('5')">5</button>
+        <button onclick="dialDigit('6')">6</button>
+        <button onclick="dialDigit('7')">7</button>
+        <button onclick="dialDigit('8')">8</button>
+        <button onclick="dialDigit('9')">9</button>
+        <button onclick="dialDigit('*')">*</button>
+        <button onclick="dialDigit('0')">0</button>
+        <button onclick="dialDigit('#')">#</button>
+        <button onclick="dialBackspace()">⌫</button>
+        <button class="op wide" onclick="dialCall()">call</button>
+      </div>
+      <div class="caption">Dials through your phone's real calling — a web app can't place the call itself, so this hands off to the native call screen with the number ready to go.</div>
+    </section>
+  </div>
+
+  <!-- TEXT -->
+  <div class="view" id="view-text">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Send a text</h2>
+      <input type="tel" id="textNumber" placeholder="Phone number">
+      <textarea id="textMessage" placeholder="Message (optional)"></textarea>
+      <button class="btn" onclick="composeText()">Open in Messages</button>
+      <div class="caption">Hands off to your real Messages app with the number (and message, if you wrote one) ready to send — a web app can't send texts on its own.</div>
+    </section>
+  </div>
+
+  <!-- FACETIME -->
+  <div class="view" id="view-facetime">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>FaceTime</h2>
+      <input type="text" id="facetimeTarget" placeholder="Phone number or Apple ID email">
+      <button class="btn" onclick="startFacetime('video')">FaceTime Video</button>
+      <button class="btn secondary" style="margin-top:10px;" onclick="startFacetime('audio')">FaceTime Audio</button>
+      <div class="caption">Launches the real FaceTime app with that person ready to call.</div>
+    </section>
+  </div>
+
+  <!-- CONTACTS -->
+  <div class="view" id="view-contacts">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Contacts</h2>
+      <div id="contactsList"></div>
+    </section>
+    <section class="card">
+      <h2>Add someone</h2>
+      <input type="text" id="contactName" placeholder="Name">
+      <input type="tel" id="contactPhone" placeholder="Phone number">
+      <button class="btn" onclick="addContact()">Add</button>
+    </section>
+    <section class="card">
+      <h2>Import your contacts</h2>
+      <label class="file-btn" for="vcfInput">Import from a vCard (.vcf) file</label>
+      <input type="file" id="vcfInput" accept=".vcf,text/vcard,text/x-vcard">
+      <div class="caption" style="margin-bottom:12px;">On iPhone: open Contacts → select the people you want (or Edit → Select All) → Share Contact → Save to Files (or AirDrop/Mail to yourself), then pick that .vcf file here. Safari won't let any web app reach into your Contacts directly — this file hand-off is the closest real workaround.</div>
+      <div class="flabel">Or paste a list (one per line: Name, Number)</div>
+      <textarea id="bulkContacts" rows="3" placeholder="Mom, 555-123-4567&#10;Sam, 555-987-6543"></textarea>
+      <button class="btn secondary" onclick="addBulkContacts()">Add all</button>
+    </section>
+  </div>
+
+  <!-- NOTES -->
+  <div class="view" id="view-notes">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Write a note</h2>
+      <textarea id="noteInput" placeholder="Write something..."></textarea>
+      <button class="btn" onclick="addNote()">Save note</button>
+    </section>
+    <section class="card">
+      <h2>Your notes</h2>
+      <div id="notesList"></div>
+    </section>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="view" id="view-calculator">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <div class="calc-display num" id="calcDisplay">0</div>
+      <div class="calc-grid">
+        <button onclick="calcClear()">AC</button>
+        <button onclick="calcSign()">±</button>
+        <button onclick="calcPercent()">%</button>
+        <button class="op" onclick="calcOp('/')">÷</button>
+        <button onclick="calcDigit('7')">7</button>
+        <button onclick="calcDigit('8')">8</button>
+        <button onclick="calcDigit('9')">9</button>
+        <button class="op" onclick="calcOp('*')">×</button>
+        <button onclick="calcDigit('4')">4</button>
+        <button onclick="calcDigit('5')">5</button>
+        <button onclick="calcDigit('6')">6</button>
+        <button class="op" onclick="calcOp('-')">−</button>
+        <button onclick="calcDigit('1')">1</button>
+        <button onclick="calcDigit('2')">2</button>
+        <button onclick="calcDigit('3')">3</button>
+        <button class="op" onclick="calcOp('+')">+</button>
+        <button class="wide" onclick="calcDigit('0')">0</button>
+        <button onclick="calcDot()">.</button>
+        <button class="op" onclick="calcEquals()">=</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- CLOCK / TIMER -->
+  <div class="view" id="view-clock">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Clock</h2>
+      <div class="clock-big num" id="clockBig"></div>
+      <div class="clock-date" id="clockDate"></div>
+    </section>
+    <section class="card">
+      <h2>Timer</h2>
+      <input type="number" id="timerMinutes" placeholder="Minutes" min="0">
+      <div class="timer-display num" id="timerDisplay">00:00</div>
+      <div class="timer-controls">
+        <button class="btn" id="timerStartBtn" onclick="timerStart()">Start</button>
+        <button class="btn secondary" onclick="timerReset()">Reset</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- MARKETPLACE -->
+  <div class="view" id="view-marketplace">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Search Marketplace</h2>
+      <input type="text" id="mktQuery" placeholder="What are you looking for?">
+      <button class="btn" onclick="searchMarketplace()">Search Facebook Marketplace</button>
+      <div class="caption">This jumps you straight to Facebook's own search results for that term. A web app can't pull prices or listings out of Marketplace directly (it's login-gated), so it hands off to the real Facebook app/site instead of showing results in here.</div>
+    </section>
+  </div>
+
+  <!-- GAMES MENU -->
+  <div class="view" id="view-games">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <div class="grid">
+      <button class="tile" onclick="openGame('tictactoe')">
+        <svg viewBox="0 0 48 48"><line x1="18" y1="8" x2="18" y2="40" stroke="var(--ink)" stroke-width="2.2"/><line x1="30" y1="8" x2="30" y2="40" stroke="var(--ink)" stroke-width="2.2"/><line x1="8" y1="18" x2="40" y2="18" stroke="var(--ink)" stroke-width="2.2"/><line x1="8" y1="30" x2="40" y2="30" stroke="var(--ink)" stroke-width="2.2"/><path d="M11 21 L15 27 M15 21 L11 27" stroke="var(--ink)" stroke-width="2"/><circle cx="24" cy="24" r="4.5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
+        <span>Tic-Tac-Toe</span>
+      </button>
+      <button class="tile" onclick="openGame('memory')">
+        <svg viewBox="0 0 48 48"><rect x="7" y="12" width="18" height="26" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2" transform="rotate(-8 16 25)"/><rect x="23" y="10" width="18" height="26" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2" transform="rotate(6 32 23)"/></svg>
+        <span>Memory Match</span>
+      </button>
+      <button class="tile" onclick="openGame('rps')">
+        <svg viewBox="0 0 48 48"><path d="M16 26 V14 a3 3 0 0 1 6 0 v8 M22 22 V10 a3 3 0 0 1 6 0 v12 M28 22 V13 a3 3 0 0 1 6 0 v13 M16 26 v6 a10 10 0 0 0 10 10 h2 a10 10 0 0 0 10 -10 v-8" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Rock Paper Scissors</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TIC TAC TOE -->
+  <div class="view" id="view-tictactoe">
+    <button class="back" onclick="openView('games')">‹ back</button>
+    <section class="card">
+      <h2>Tic-Tac-Toe — you're X</h2>
+      <div class="ttt-board" id="tttBoard"></div>
+      <div class="game-status" id="tttStatus">Your move</div>
+      <button class="btn secondary" style="margin-top:12px;" onclick="tttReset()">New game</button>
+    </section>
+  </div>
+
+  <!-- MEMORY MATCH -->
+  <div class="view" id="view-memory">
+    <button class="back" onclick="openView('games')">‹ back</button>
+    <section class="card">
+      <h2>Memory Match</h2>
+      <div class="game-status" id="memStatus">Moves: 0</div>
+      <div class="mem-board" id="memBoard"></div>
+      <button class="btn secondary" style="margin-top:12px;" onclick="memReset()">New game</button>
+    </section>
+  </div>
+
+  <!-- ROCK PAPER SCISSORS -->
+  <div class="view" id="view-rps">
+    <button class="back" onclick="openView('games')">‹ back</button>
+    <section class="card">
+      <h2>Rock Paper Scissors</h2>
+      <div class="game-status" id="rpsStatus">Pick one</div>
+      <div class="rps-row">
+        <button class="btn secondary" onclick="rpsPlay('rock')">🪨 Rock</button>
+        <button class="btn secondary" onclick="rpsPlay('paper')">📄 Paper</button>
+        <button class="btn secondary" onclick="rpsPlay('scissors')">✂️ Scissors</button>
+      </div>
+      <div class="game-status" id="rpsScore" style="margin-top:14px;">Wins 0 · Losses 0 · Ties 0</div>
+    </section>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function openView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(name === 'contacts') renderContacts();
+  if(name === 'notes') renderNotes();
+  if(name === 'clock') { updateClock(); }
+  if(name === 'phone') { dialRender(); }
+}
+
+function openGame(name){
+  openView(name);
+  if(name === 'tictactoe') tttReset();
+  if(name === 'memory') memReset();
+  if(name === 'rps') rpsRenderScore();
+}
+
+/* ---------- header clock ---------- */
+function pad(n){ return String(n).padStart(2,'0'); }
+function formatTime12(d, withSeconds){
+  let h = d.getHours();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h === 0) h = 12;
+  let str = h + ':' + pad(d.getMinutes());
+  if(withSeconds) str += ':' + pad(d.getSeconds());
+  return str + ' ' + ampm;
+}
+function updateHeaderClock(){
+  document.getElementById('headerClock').textContent = formatTime12(new Date(), false);
+}
+setInterval(updateHeaderClock, 1000*10);
+updateHeaderClock();
+
+/* ---------- contacts ---------- */
+const CONTACTS_KEY = 'hub_contacts';
+let contacts = JSON.parse(localStorage.getItem(CONTACTS_KEY) || '[]');
+
+function saveContacts(){ localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts)); }
+
+function renderContacts(){
+  const el = document.getElementById('contactsList');
+  if(contacts.length === 0){ el.innerHTML = '<div class="empty">No one added yet.</div>'; return; }
+  el.innerHTML = contacts.map((c,i)=>`
+    <div class="list-item">
+      <div>
+        <div class="name">${escapeHtml(c.name)}</div>
+        <div class="phone">${escapeHtml(c.phone)}</div>
+      </div>
+      <div>
+        <a class="icon-btn" href="tel:${encodeURIComponent(c.phone)}">call</a>
+        <a class="icon-btn" href="sms:${encodeURIComponent(c.phone)}">text</a>
+        <button class="icon-btn danger" onclick="removeContact(${i})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addContact(){
+  const name = document.getElementById('contactName').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
+  if(!name || !phone){ toast('Add a name and phone number'); return; }
+  contacts.push({name, phone});
+  saveContacts();
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactPhone').value = '';
+  renderContacts();
+  toast('Added');
+}
+function removeContact(i){
+  contacts.splice(i,1);
+  saveContacts();
+  renderContacts();
+}
+
+function addBulkContacts(){
+  const text = document.getElementById('bulkContacts').value;
+  const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  lines.forEach(line=>{
+    const parts = line.split(',');
+    if(parts.length >= 2){
+      const name = parts[0].trim();
+      const phone = parts.slice(1).join(',').trim();
+      if(name && phone){ contacts.push({name, phone}); added++; }
+    }
+  });
+  if(added === 0){ toast('Use one per line: Name, Number'); return; }
+  saveContacts();
+  document.getElementById('bulkContacts').value = '';
+  renderContacts();
+  toast(added + ' contact(s) added');
+}
+
+document.getElementById('vcfInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const text = ev.target.result;
+    const blocks = text.split(/BEGIN:VCARD/i).slice(1);
+    let added = 0;
+    blocks.forEach(block=>{
+      const nameMatch = block.match(/\nFN:(.+)/i) || block.match(/^FN:(.+)/im);
+      const telMatches = [...block.matchAll(/TEL[^:\n]*:([^\n\r]+)/gi)];
+      if(nameMatch && telMatches.length){
+        const name = nameMatch[1].trim();
+        const phone = telMatches[0][1].trim();
+        if(name && phone && !contacts.some(c=>c.phone === phone)){
+          contacts.push({name, phone});
+          added++;
+        }
+      }
+    });
+    saveContacts();
+    renderContacts();
+    toast(added > 0 ? added + ' contact(s) imported' : 'No contacts found in that file');
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- notes ---------- */
+const NOTES_KEY = 'hub_notes';
+let notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
+
+function saveNotes(){ localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); }
+
+function renderNotes(){
+  const el = document.getElementById('notesList');
+  if(notes.length === 0){ el.innerHTML = '<div class="empty">No notes yet.</div>'; return; }
+  el.innerHTML = [...notes].reverse().map((n)=>{
+    const realIndex = notes.indexOf(n);
+    return `<div class="note-item">
+      <div class="note-text">${escapeHtml(n.text)}</div>
+      <div class="note-actions"><button class="icon-btn danger" onclick="removeNote(${realIndex})">delete</button></div>
+    </div>`;
+  }).join('');
+}
+
+function addNote(){
+  const text = document.getElementById('noteInput').value.trim();
+  if(!text){ toast('Write something first'); return; }
+  notes.push({text, date: Date.now()});
+  saveNotes();
+  document.getElementById('noteInput').value = '';
+  renderNotes();
+  toast('Saved');
+}
+function removeNote(i){
+  notes.splice(i,1);
+  saveNotes();
+  renderNotes();
+}
+
+/* ---------- calculator ---------- */
+let calcState = { display: '0', prev: null, op: null, waiting: false };
+
+function calcRender(){ document.getElementById('calcDisplay').textContent = calcState.display; }
+function calcClear(){ calcState = { display: '0', prev: null, op: null, waiting: false }; calcRender(); }
+function calcDigit(d){
+  if(calcState.waiting){ calcState.display = d; calcState.waiting = false; }
+  else { calcState.display = calcState.display === '0' ? d : calcState.display + d; }
+  calcRender();
+}
+function calcDot(){
+  if(calcState.waiting){ calcState.display = '0.'; calcState.waiting = false; calcRender(); return; }
+  if(!calcState.display.includes('.')) calcState.display += '.';
+  calcRender();
+}
+function calcSign(){
+  calcState.display = String(parseFloat(calcState.display) * -1);
+  calcRender();
+}
+function calcPercent(){
+  calcState.display = String(parseFloat(calcState.display) / 100);
+  calcRender();
+}
+function calcOp(op){
+  if(calcState.prev !== null && !calcState.waiting){ calcEquals(); }
+  calcState.prev = parseFloat(calcState.display);
+  calcState.op = op;
+  calcState.waiting = true;
+}
+function calcEquals(){
+  if(calcState.op === null || calcState.prev === null) return;
+  const cur = parseFloat(calcState.display);
+  let result;
+  switch(calcState.op){
+    case '+': result = calcState.prev + cur; break;
+    case '-': result = calcState.prev - cur; break;
+    case '*': result = calcState.prev * cur; break;
+    case '/': result = cur === 0 ? 'Error' : calcState.prev / cur; break;
+  }
+  calcState.display = typeof result === 'number' ? String(Math.round(result * 1e10) / 1e10) : result;
+  calcState.prev = null;
+  calcState.op = null;
+  calcState.waiting = true;
+  calcRender();
+}
+calcRender();
+
+/* ---------- clock / timer ---------- */
+function updateClock(){
+  const d = new Date();
+  document.getElementById('clockBig').textContent = formatTime12(d, true);
+  document.getElementById('clockDate').textContent = d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+}
+setInterval(()=>{ if(document.getElementById('view-clock').classList.contains('active')) updateClock(); }, 1000);
+
+let timerSeconds = 0;
+let timerInterval = null;
+let timerRunning = false;
+
+function timerRenderDisplay(){
+  const m = Math.floor(timerSeconds/60);
+  const s = timerSeconds%60;
+  document.getElementById('timerDisplay').textContent = pad(m)+':'+pad(s);
+}
+
+function timerStart(){
+  if(timerRunning){
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = 'Resume';
+    return;
+  }
+  if(timerSeconds <= 0){
+    const mins = parseFloat(document.getElementById('timerMinutes').value);
+    if(!mins || mins <= 0){ toast('Set minutes first'); return; }
+    timerSeconds = Math.round(mins * 60);
+  }
+  timerRunning = true;
+  document.getElementById('timerStartBtn').textContent = 'Pause';
+  timerInterval = setInterval(()=>{
+    timerSeconds--;
+    timerRenderDisplay();
+    if(timerSeconds <= 0){
+      clearInterval(timerInterval);
+      timerRunning = false;
+      document.getElementById('timerStartBtn').textContent = 'Start';
+      toast("Time's up");
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  }, 1000);
+}
+
+function timerReset(){
+  clearInterval(timerInterval);
+  timerRunning = false;
+  timerSeconds = 0;
+  document.getElementById('timerStartBtn').textContent = 'Start';
+  timerRenderDisplay();
+}
+timerRenderDisplay();
+
+/* ---------- marketplace ---------- */
+function searchMarketplace(){
+  const q = document.getElementById('mktQuery').value.trim();
+  if(!q){ toast('Type what you\'re looking for'); return; }
+  window.open('https://www.facebook.com/marketplace/search/?query=' + encodeURIComponent(q), '_blank');
+}
+
+/* ---------- messenger ---------- */
+function openMessenger(){
+  const start = Date.now();
+  window.location = 'fb-messenger://';
+  setTimeout(()=>{
+    if(Date.now() - start < 1600){
+      window.location = 'https://www.messenger.com/';
+    }
+  }, 1000);
+}
+
+/* ---------- audible ---------- */
+function openAudible(){
+  const start = Date.now();
+  window.location = 'audible://';
+  setTimeout(()=>{
+    if(Date.now() - start < 1600){
+      window.location = 'https://www.audible.com/';
+    }
+  }, 1000);
+}
+
+/* ---------- phone dial pad ---------- */
+let dialNumber = '';
+function dialRender(){
+  document.getElementById('dialDisplay').textContent = dialNumber || ' ';
+}
+function dialDigit(d){
+  dialNumber += d;
+  dialRender();
+}
+function dialBackspace(){
+  dialNumber = dialNumber.slice(0, -1);
+  dialRender();
+}
+function dialCall(){
+  if(!dialNumber){ toast('Enter a number first'); return; }
+  window.location = 'tel:' + encodeURIComponent(dialNumber);
+}
+
+/* ---------- text ---------- */
+function composeText(){
+  const num = document.getElementById('textNumber').value.trim();
+  const msg = document.getElementById('textMessage').value.trim();
+  if(!num){ toast('Enter a number first'); return; }
+  let url = 'sms:' + encodeURIComponent(num);
+  if(msg) url += '&body=' + encodeURIComponent(msg);
+  window.location = url;
+}
+
+/* ---------- facetime ---------- */
+function startFacetime(kind){
+  const target = document.getElementById('facetimeTarget').value.trim();
+  if(!target){ toast('Enter a number or email first'); return; }
+  const scheme = kind === 'audio' ? 'facetime-audio:' : 'facetime:';
+  window.location = scheme + encodeURIComponent(target);
+}
+
+/* ---------- tic-tac-toe ---------- */
+let tttBoard = Array(9).fill(null);
+let tttOver = false;
+const TTT_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function tttReset(){
+  tttBoard = Array(9).fill(null);
+  tttOver = false;
+  document.getElementById('tttStatus').textContent = 'Your move';
+  tttRender();
+}
+function tttRender(){
+  const el = document.getElementById('tttBoard');
+  el.innerHTML = tttBoard.map((v,i)=>`<button ${v || tttOver ? 'disabled' : ''} onclick="tttMove(${i})">${v||''}</button>`).join('');
+}
+function tttWinner(b){
+  for(const [a,b1,c] of TTT_LINES){
+    if(b[a] && b[a]===b[b1] && b[a]===b[c]) return b[a];
+  }
+  if(b.every(x=>x)) return 'draw';
+  return null;
+}
+function tttComputerMove(){
+  const b = tttBoard;
+  for(const line of TTT_LINES){
+    const vals = line.map(i=>b[i]);
+    if(vals.filter(v=>v==='O').length===2 && vals.includes(null)) return line[vals.indexOf(null)];
+  }
+  for(const line of TTT_LINES){
+    const vals = line.map(i=>b[i]);
+    if(vals.filter(v=>v==='X').length===2 && vals.includes(null)) return line[vals.indexOf(null)];
+  }
+  if(b[4]===null) return 4;
+  const corners = [0,2,6,8].filter(i=>b[i]===null);
+  if(corners.length) return corners[Math.floor(Math.random()*corners.length)];
+  const empties = b.map((v,i)=>v===null?i:-1).filter(i=>i!==-1);
+  return empties.length ? empties[Math.floor(Math.random()*empties.length)] : -1;
+}
+function tttEnd(w){
+  tttOver = true;
+  tttRender();
+  document.getElementById('tttStatus').textContent = w==='draw' ? "It's a draw" : (w==='X' ? 'You win!' : 'Computer wins');
+}
+function tttMove(i){
+  if(tttBoard[i] || tttOver) return;
+  tttBoard[i] = 'X';
+  let w = tttWinner(tttBoard);
+  tttRender();
+  if(w){ tttEnd(w); return; }
+  document.getElementById('tttStatus').textContent = "Computer's move...";
+  setTimeout(()=>{
+    const move = tttComputerMove();
+    if(move !== -1) tttBoard[move] = 'O';
+    w = tttWinner(tttBoard);
+    tttRender();
+    if(w) tttEnd(w);
+    else document.getElementById('tttStatus').textContent = 'Your move';
+  }, 350);
+}
+
+/* ---------- memory match ---------- */
+let memCards = [], memFlipped = [], memMatched = [], memMoves = 0, memLock = false;
+function memReset(){
+  const symbols = ['🍎','🍌','🍇','🍒','🍋','🍉','🍑','🥝'];
+  let deck = [...symbols, ...symbols];
+  for(let i=deck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]] = [deck[j],deck[i]];
+  }
+  memCards = deck; memFlipped = []; memMatched = []; memMoves = 0; memLock = false;
+  document.getElementById('memStatus').textContent = 'Moves: 0';
+  memRender();
+}
+function memRender(){
+  const el = document.getElementById('memBoard');
+  el.innerHTML = memCards.map((sym,i)=>{
+    const shown = memFlipped.includes(i) || memMatched.includes(i);
+    const cls = memMatched.includes(i) ? 'matched' : (memFlipped.includes(i) ? 'flipped' : '');
+    return `<button class="${cls}" onclick="memFlip(${i})">${shown?sym:''}</button>`;
+  }).join('');
+}
+function memFlip(i){
+  if(memLock || memFlipped.includes(i) || memMatched.includes(i)) return;
+  memFlipped.push(i);
+  memRender();
+  if(memFlipped.length === 2){
+    memMoves++;
+    document.getElementById('memStatus').textContent = 'Moves: ' + memMoves;
+    memLock = true;
+    const [a,b] = memFlipped;
+    if(memCards[a] === memCards[b]){
+      memMatched.push(a,b);
+      memFlipped = [];
+      memLock = false;
+      memRender();
+      if(memMatched.length === memCards.length){
+        document.getElementById('memStatus').textContent = 'Solved in ' + memMoves + ' moves!';
+      }
+    } else {
+      setTimeout(()=>{ memFlipped = []; memLock = false; memRender(); }, 700);
+    }
+  }
+}
+
+/* ---------- rock paper scissors ---------- */
+let rpsScore = { win:0, lose:0, tie:0 };
+function rpsRenderScore(){
+  document.getElementById('rpsScore').textContent = `Wins ${rpsScore.win} · Losses ${rpsScore.lose} · Ties ${rpsScore.tie}`;
+}
+function rpsPlay(choice){
+  const options = ['rock','paper','scissors'];
+  const comp = options[Math.floor(Math.random()*3)];
+  const labels = {rock:'🪨 Rock', paper:'📄 Paper', scissors:'✂️ Scissors'};
+  let result, msg;
+  if(choice === comp){ result='tie'; rpsScore.tie++; msg = `Tie — both picked ${labels[choice]}`; }
+  else if((choice==='rock'&&comp==='scissors')||(choice==='paper'&&comp==='rock')||(choice==='scissors'&&comp==='paper')){
+    result='win'; rpsScore.win++; msg = `You win! ${labels[choice]} beats ${labels[comp]}`;
+  } else {
+    result='lose'; rpsScore.lose++; msg = `Computer wins — ${labels[comp]} beats ${labels[choice]}`;
+  }
+  document.getElementById('rpsStatus').textContent = msg;
+  rpsRenderScore();
+}
+
+/* ---------- utils ---------- */
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>
