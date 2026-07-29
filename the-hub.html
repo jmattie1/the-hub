@@ -41,6 +41,7 @@
     background:var(--danger);color:var(--paper);border:2px solid var(--paper);display:none;
     align-items:center;justify-content:center;font-size:14px;cursor:pointer;z-index:5;}
   .grid.edit-mode .tile-badge{display:flex;}
+  .tile.dragging{opacity:.5;}
   .edit-toggle-row{display:flex;justify-content:flex-end;margin:-4px 0 4px;}
   .edit-toggle-row .back{margin:0;}
   .app-icon-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);
@@ -192,7 +193,11 @@
       </button>
       <button class="tile" onclick="openSettingsApp()">
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 6 v5 M24 37 v5 M42 24 h-5 M11 24 H6 M36.5 11.5 l-3.5 3.5 M15 33 l-3.5 3.5 M36.5 36.5 l-3.5-3.5 M15 15 l-3.5-3.5" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></svg>
-        <span>Settings</span>
+        <span>iOS Settings</span>
+      </button>
+      <button class="tile" onclick="openView('appsettings')">
+        <svg viewBox="0 0 48 48"><line x1="10" y1="14" x2="38" y2="14" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="18" cy="14" r="3.4" fill="var(--paper2)" stroke="var(--ink)" stroke-width="2.2"/><line x1="10" y1="24" x2="38" y2="24" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="30" cy="24" r="3.4" fill="var(--paper2)" stroke="var(--ink)" stroke-width="2.2"/><line x1="10" y1="34" x2="38" y2="34" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="21" cy="34" r="3.4" fill="var(--paper2)" stroke="var(--ink)" stroke-width="2.2"/></svg>
+        <span>App Settings</span>
       </button>
       <button class="tile" onclick="openFindMy()">
         <svg viewBox="0 0 48 48"><path d="M24 6 C17 6 12 11 12 18 C12 27 24 42 24 42 C24 42 36 27 36 18 C36 11 31 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
@@ -272,16 +277,31 @@
       <h2>App Store</h2>
       <input type="text" id="storeSearch" placeholder="Search apps to add" oninput="renderAppStore()">
       <div id="storeList"></div>
-      <div class="caption">These launch each app the same way the rest of Slate does — its own link scheme with a website fallback. Apple doesn't officially document most of these, so a few may not open the app itself. Adding one puts it on your home screen right away.</div>
+      <div class="caption">These launch each app the same way the rest of Slate does — its own link scheme with a website fallback. Apple doesn't officially document most of these, so a few may not open the app itself. Adding one puts it on your home screen right away. Manage hidden apps or message Claude from App Settings.</div>
+    </section>
+  </div>
+
+  <!-- APP SETTINGS -->
+  <div class="view" id="view-appsettings">
+    <section class="card">
+      <h2>Home screen</h2>
+      <button class="btn secondary" onclick="toggleEditMode()" id="editModeBtn2">Edit tiles</button>
+      <div class="caption">Turns on the same Edit mode as the ✕ up top. While it's on, drag a tile to reorder it, or tap the ✕ to remove it.</div>
     </section>
     <section class="card">
       <h2>Hidden / removed tiles</h2>
       <div id="hiddenList"></div>
     </section>
     <section class="card">
-      <h2>Suggest something</h2>
-      <textarea id="suggestBox" rows="3" placeholder="Note an idea or app you want added here, then copy it and paste it to Claude next time you're chatting. Slate is just a static page — it can't reach Claude on its own, so this is a scratchpad, not a live bot."></textarea>
-      <button class="btn secondary" onclick="copySuggestion()">Copy suggestion</button>
+      <h2>Message Claude</h2>
+      <textarea id="suggestBox" rows="3" placeholder="Note an idea or app you want added here, then copy it and paste it to Claude next time you're chatting."></textarea>
+      <button class="btn secondary" onclick="copySuggestion()">Copy message</button>
+      <div class="caption">This is the closest honest version of an "always-on chat bot": Slate is a static page with no server, so it has no way to reach Claude or anyone else on its own. Write your note, copy it, then paste it into your chat with Claude — that's what actually gets the app updated.</div>
+    </section>
+    <section class="card">
+      <h2>Reset</h2>
+      <button class="icon-btn danger" onclick="resetCustomization()">Reset home screen customization</button>
+      <div class="caption">Clears hidden apps, added apps, and your tile order. Does not touch your contacts or notes.</div>
     </section>
   </div>
 
@@ -533,7 +553,8 @@ function openView(name){
   if(name === 'contacts') renderContacts();
   if(name === 'clock') { updateClock(); }
   if(name === 'phone') { dialRender(); }
-  if(name === 'appstore') { renderAppStore(); renderHiddenList(); }
+  if(name === 'appstore') { renderAppStore(); }
+  if(name === 'appsettings') { renderHiddenList(); }
 }
 
 function openGame(name){
@@ -549,7 +570,7 @@ function openGame(name){
 /* ---------- swipe left-to-right to go back ---------- */
 const BACK_MAP = {
   phone:'home', facetime:'home', contacts:'home', calculator:'home', clock:'home',
-  marketplace:'home', games:'home', 'embed-money':'home', appstore:'home',
+  marketplace:'home', games:'home', 'embed-money':'home', appstore:'home', appsettings:'home',
   tictactoe:'games', memory:'games', rps:'games', snake:'games', whack:'games', connect4:'games'
 };
 let swipeStartX = null, swipeStartY = null;
@@ -838,22 +859,31 @@ function openFindMy(){ launchApp('findmy://', 'https://www.icloud.com/find/'); }
      never goes hidden, so after a beat we fall back to the website instead. */
 function launchApp(scheme, fallbackUrl){
   let appOpened = false;
+  function markOpened(){ appOpened = true; }
   function handleVisibility(){
     if(document.hidden){
-      appOpened = true;
+      markOpened();
     } else if(appOpened){
       openView('home');
-      document.removeEventListener('visibilitychange', handleVisibility);
+      cleanup();
     }
   }
+  function cleanup(){
+    document.removeEventListener('visibilitychange', handleVisibility);
+    window.removeEventListener('pagehide', markOpened);
+  }
   document.addEventListener('visibilitychange', handleVisibility);
+  window.addEventListener('pagehide', markOpened);
   window.location = scheme;
+  // give the OS extra room (some app-switch animations take well over a second)
+  // before deciding the scheme genuinely failed, and re-check document.hidden
+  // one more time right at the deadline in case the visibility event lagged.
   setTimeout(()=>{
-    if(!appOpened){
+    if(!appOpened && !document.hidden){
       if(fallbackUrl) window.location = fallbackUrl;
-      document.removeEventListener('visibilitychange', handleVisibility);
+      cleanup();
     }
-  }, 1200);
+  }, 2000);
 }
 function openSettingsApp(){
   toast("iOS blocks apps' Settings shortcut from web pages — if nothing happens, open Settings manually");
@@ -961,7 +991,9 @@ function renderCustomTiles(){
     del.onclick = (e)=>{ e.stopPropagation(); hideTile(id, app.name, true); };
     btn.appendChild(del);
     grid.appendChild(btn);
+    attachDragHandlers(btn);
   });
+  applyTileOrder();
 }
 function renderAppStore(){
   const box = document.getElementById('storeSearch');
@@ -998,7 +1030,7 @@ function hideTile(id, label, isCustom){
   const tile = document.querySelector(`#homeGrid [data-tile-id="${CSS.escape(id)}"]`);
   if(tile) tile.style.display = 'none';
   renderHiddenList();
-  toast(label + ' removed — restore it from the App Store');
+  toast(label + ' removed — restore it from App Settings');
 }
 function restoreTile(id){
   saveHiddenTiles(getHiddenTiles().filter(h=>h.id!==id));
@@ -1032,12 +1064,67 @@ function initHomeTiles(){
       del.onclick = (e)=>{ e.stopPropagation(); e.preventDefault(); hideTile(id, label, false); };
       tile.appendChild(del);
     }
+    attachDragHandlers(tile);
+  });
+}
+
+/* ---------- drag to reorder tiles (only while Edit mode is on) ---------- */
+let dragTile = null;
+function attachDragHandlers(tile){
+  if(tile.dataset.dragBound) return;
+  tile.dataset.dragBound = '1';
+  tile.addEventListener('touchstart', (e)=>{
+    if(!document.getElementById('homeGrid').classList.contains('edit-mode')) return;
+    if(e.target.closest('.tile-badge')) return;
+    dragTile = tile;
+    tile.classList.add('dragging');
+  }, {passive:true});
+  tile.addEventListener('touchmove', (e)=>{
+    if(!dragTile) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const overEl = document.elementFromPoint(touch.clientX, touch.clientY);
+    const overTile = overEl && overEl.closest('.tile');
+    if(overTile && overTile !== dragTile && overTile.parentElement === dragTile.parentElement){
+      const grid = dragTile.parentElement;
+      const tiles = [...grid.children];
+      if(tiles.indexOf(dragTile) < tiles.indexOf(overTile)) grid.insertBefore(dragTile, overTile.nextSibling);
+      else grid.insertBefore(dragTile, overTile);
+    }
+  }, {passive:false});
+  tile.addEventListener('touchend', ()=>{
+    if(!dragTile) return;
+    dragTile.classList.remove('dragging');
+    dragTile = null;
+    saveTileOrder();
+  });
+}
+function saveTileOrder(){
+  const grid = document.getElementById('homeGrid');
+  const order = [...grid.children].map(t=>t.getAttribute('data-tile-id')).filter(Boolean);
+  localStorage.setItem('hub_tile_order', JSON.stringify(order));
+}
+function applyTileOrder(){
+  const grid = document.getElementById('homeGrid');
+  const order = JSON.parse(localStorage.getItem('hub_tile_order') || '[]');
+  order.forEach(id=>{
+    const el = grid.querySelector(`[data-tile-id="${CSS.escape(id)}"]`);
+    if(el) grid.appendChild(el);
   });
 }
 function toggleEditMode(){
   const grid = document.getElementById('homeGrid');
   const on = grid.classList.toggle('edit-mode');
   document.getElementById('editModeBtn').textContent = on ? 'Done' : 'Edit';
+  const btn2 = document.getElementById('editModeBtn2');
+  if(btn2) btn2.textContent = on ? 'Done editing' : 'Edit tiles';
+}
+function resetCustomization(){
+  if(!confirm('Reset hidden apps, added apps, and tile order? Your contacts and notes are untouched.')) return;
+  localStorage.removeItem('hub_hidden_tiles');
+  localStorage.removeItem('hub_custom_apps');
+  localStorage.removeItem('hub_tile_order');
+  location.reload();
 }
 function copySuggestion(){
   const box = document.getElementById('suggestBox');
