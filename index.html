@@ -22,7 +22,7 @@
     padding-bottom:20px;
   }
   .num{font-family:-apple-system,Menlo,monospace;}
-  header{height:24px;background:var(--paper);}
+  header{height:calc(env(safe-area-inset-top, 0px) + 44px);background:var(--paper);}
   main{max-width:480px;margin:0 auto;padding:18px;}
   .view{display:none;}
   .view.active{display:block;}
@@ -210,7 +210,26 @@
         <span>Music</span>
       </button>
       <button class="tile" onclick="openClaude()">
-        <svg viewBox="0 0 48 48"><path d="M24 8 L29 20 L41 24 L29 28 L24 40 L19 28 L7 24 L19 20 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 48 48">
+          <g stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round">
+            <line x1="24" y1="24" x2="24" y2="6"/>
+            <line x1="24" y1="24" x2="24" y2="42"/>
+            <line x1="24" y1="24" x2="42" y2="24"/>
+            <line x1="24" y1="24" x2="6" y2="24"/>
+            <line x1="24" y1="24" x2="36.7" y2="11.3"/>
+            <line x1="24" y1="24" x2="11.3" y2="36.7"/>
+            <line x1="24" y1="24" x2="36.7" y2="36.7"/>
+            <line x1="24" y1="24" x2="11.3" y2="11.3"/>
+            <line x1="24" y1="24" x2="31" y2="8.5"/>
+            <line x1="24" y1="24" x2="17" y2="39.5"/>
+            <line x1="24" y1="24" x2="39.5" y2="31"/>
+            <line x1="24" y1="24" x2="8.5" y2="17"/>
+            <line x1="24" y1="24" x2="17" y2="8.5"/>
+            <line x1="24" y1="24" x2="31" y2="39.5"/>
+            <line x1="24" y1="24" x2="39.5" y2="17"/>
+            <line x1="24" y1="24" x2="8.5" y2="31"/>
+          </g>
+        </svg>
         <span>Claude</span>
       </button>
       <button class="tile" onclick="openTesla()">
@@ -786,7 +805,7 @@ function openMessenger(){ launchApp('fb-messenger://', 'https://www.messenger.co
 function openAudible(){ launchApp('audible://', 'https://www.audible.com/'); }
 function openFindMy(){ launchApp('findmy://', 'https://www.icloud.com/find/'); }
 
-/* ---------- generic app launcher (scheme + web fallback + best-effort close) ---------- */
+/* ---------- generic app launcher (scheme + web fallback + auto-return home) ---------- */
 function launchApp(scheme, fallbackUrl){
   const start = Date.now();
   window.location = scheme;
@@ -794,8 +813,10 @@ function launchApp(scheme, fallbackUrl){
     if(Date.now() - start < 1600 && fallbackUrl){
       window.location = fallbackUrl;
     }
-    setTimeout(()=>{ try{ window.close(); }catch(e){} }, 600);
   }, 1000);
+  // whenever this tab is next foregrounded, if it's been ~3s or more since we
+  // launched, snap back to the home grid so you're not stuck on this tile.
+  setTimeout(()=>{ openView('home'); }, 3000);
 }
 function openWeightWatchers(){ launchApp('ww://', 'https://www.weightwatchers.com/us/'); }
 function openSettingsApp(){ launchApp('app-settings:', null); }
@@ -810,7 +831,7 @@ function openMessagesApp(){ launchApp('sms:', null); }
 function openNotesApp(){ launchApp('mobilenotes://', null); }
 function openClaude(){ launchApp('claude://', 'https://claude.ai/'); }
 function openTesla(){ launchApp('tesla://', 'https://www.tesla.com/'); }
-function openGoogle(){ window.location = 'https://www.google.com/'; }
+function openGoogle(){ launchApp('https://www.google.com/', null); }
 
 /* ---------- phone dial pad ---------- */
 let dialNumber = '';
