@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>the hub</title>
+<title>Slate</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
 <style>
   :root{
@@ -107,6 +107,10 @@
   .whack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:14px auto;}
   .whack-grid button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper2);font-size:28px;cursor:pointer;}
   .whack-grid button.active{background:var(--paper);}
+  .c4-board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:320px;margin:12px auto;background:var(--paper2);border:2px solid var(--ink);border-radius:14px;padding:8px;}
+  .c4-board button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper);cursor:pointer;padding:0;}
+  .c4-board button.p1{background:var(--ink);}
+  .c4-board button.p2{background:var(--paper2);border:2px solid var(--ink);box-shadow:inset 0 0 0 3px var(--paper);}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:12px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
   .toast.show{opacity:1;}
 </style>
@@ -114,7 +118,7 @@
 <body>
 
 <header>
-  <h1>the hub</h1>
+  <h1>Slate</h1>
   <div class="time num" id="headerClock"></div>
 </header>
 
@@ -170,17 +174,45 @@
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 14 V34 M29 18 C29 18 27 16 23 16 C20 16 18 17.5 18 20 C18 25 30 22 30 28 C30 30.5 27.5 32 24 32 C20 32 18 30 18 30" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Money</span>
       </button>
-      <button class="tile" onclick="openView('points')">
+      <button class="tile" onclick="openWeightWatchers()">
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 24 L21 29 L32 18" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span>Points</span>
+        <span>Weight Watchers</span>
       </button>
-      <button class="tile" onclick="openView('settings')">
+      <button class="tile" onclick="openSettingsApp()">
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 6 v5 M24 37 v5 M42 24 h-5 M11 24 H6 M36.5 11.5 l-3.5 3.5 M15 33 l-3.5 3.5 M36.5 36.5 l-3.5-3.5 M15 15 l-3.5-3.5" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></svg>
         <span>Settings</span>
       </button>
       <button class="tile" onclick="openFindMy()">
         <svg viewBox="0 0 48 48"><path d="M24 6 C17 6 12 11 12 18 C12 27 24 42 24 42 C24 42 36 27 36 18 C36 11 31 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
         <span>Find My</span>
+      </button>
+      <button class="tile" onclick="openCamera()">
+        <svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="24" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 14 L19 9 H29 L32 14" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="26" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
+        <span>Camera</span>
+      </button>
+      <button class="tile" onclick="openPhotos()">
+        <svg viewBox="0 0 48 48"><rect x="8" y="8" width="26" height="26" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="14" y="14" width="26" height="26" rx="4" fill="var(--paper2)" stroke="var(--ink)" stroke-width="2.2"/><circle cx="22" cy="24" r="3" fill="none" stroke="var(--ink)" stroke-width="1.8"/><path d="M16 33 L24 25 L30 31 L34 27 L39 33" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        <span>Photos</span>
+      </button>
+      <button class="tile" onclick="openMaps()">
+        <svg viewBox="0 0 48 48"><path d="M17 8 L8 12 V40 L17 36 L31 40 L40 36 V8 L31 12 L17 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><line x1="17" y1="8" x2="17" y2="36" stroke="var(--ink)" stroke-width="2"/><line x1="31" y1="12" x2="31" y2="40" stroke="var(--ink)" stroke-width="2"/><circle cx="24" cy="22" r="3" fill="var(--ink)"/></svg>
+        <span>Maps</span>
+      </button>
+      <button class="tile" onclick="openCalendar()">
+        <svg viewBox="0 0 48 48"><rect x="7" y="10" width="34" height="30" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="7" y1="18" x2="41" y2="18" stroke="var(--ink)" stroke-width="2.2"/><line x1="15" y1="6" x2="15" y2="13" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><line x1="33" y1="6" x2="33" y2="13" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="15" cy="26" r="1.8" fill="var(--ink)"/><circle cx="24" cy="26" r="1.8" fill="var(--ink)"/><circle cx="33" cy="26" r="1.8" fill="var(--ink)"/><circle cx="15" cy="33" r="1.8" fill="var(--ink)"/><circle cx="24" cy="33" r="1.8" fill="var(--ink)"/></svg>
+        <span>Calendar</span>
+      </button>
+      <button class="tile" onclick="openReminders()">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M17 24 L22 29 L32 18" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="24" y1="4" x2="24" y2="8" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span>Reminders</span>
+      </button>
+      <button class="tile" onclick="openMail()">
+        <svg viewBox="0 0 48 48"><rect x="6" y="11" width="36" height="26" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M7 14 L24 27 L41 14" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        <span>Mail</span>
+      </button>
+      <button class="tile" onclick="openMusic()">
+        <svg viewBox="0 0 48 48"><circle cx="15" cy="34" r="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="35" cy="30" r="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="34" x2="20" y2="12" stroke="var(--ink)" stroke-width="2.2"/><line x1="40" y1="30" x2="40" y2="8" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="12" x2="40" y2="8" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="18" x2="40" y2="14" stroke="var(--ink)" stroke-width="2.2"/></svg>
+        <span>Music</span>
       </button>
     </div>
   </div>
@@ -329,6 +361,16 @@
         <button class="btn secondary" onclick="timerReset()">Reset</button>
       </div>
     </section>
+    <section class="card">
+      <h2>Stopwatch</h2>
+      <div class="timer-display num" id="stopwatchDisplay">00:00.0</div>
+      <div class="timer-controls">
+        <button class="btn" id="stopwatchStartBtn" onclick="stopwatchStart()">Start</button>
+        <button class="btn secondary" onclick="stopwatchLap()">Lap</button>
+        <button class="btn secondary" onclick="stopwatchReset()">Reset</button>
+      </div>
+      <div id="stopwatchLaps"></div>
+    </section>
   </div>
 
   <!-- MARKETPLACE -->
@@ -339,59 +381,6 @@
       <input type="text" id="mktQuery" placeholder="What are you looking for?">
       <button class="btn" onclick="searchMarketplace()">Search Facebook Marketplace</button>
       <div class="caption">This jumps you straight to Facebook's own search results for that term. A web app can't pull prices or listings out of Marketplace directly (it's login-gated), so it hands off to the real Facebook app/site instead of showing results in here.</div>
-    </section>
-  </div>
-
-  <!-- POINTS TRACKER -->
-  <div class="view" id="view-points">
-    <button class="back" onclick="openView('home')">‹ back</button>
-    <section class="card">
-      <div class="points-daynav">
-        <button onclick="pointsChangeDay(-1)">‹</button>
-        <div id="pointsDayLabel"></div>
-        <button onclick="pointsChangeDay(1)">›</button>
-      </div>
-      <div class="points-summary">
-        <div class="points-used num" id="pointsUsedDisplay">0</div>
-        <div class="points-target-label">of <span id="pointsTargetLabel">23</span> points</div>
-      </div>
-      <div class="bar-track"><div class="bar-fill" id="pointsBar" style="width:0%"></div></div>
-    </section>
-    <section class="card">
-      <h2>Weekly bonus points</h2>
-      <div class="points-summary small">
-        <div class="points-used num" id="weeklyBonusDisplay">0</div>
-        <div class="points-target-label">remaining</div>
-      </div>
-      <button class="btn secondary" onclick="resetWeeklyBonus()">Reset for new week</button>
-    </section>
-    <section class="card">
-      <h2>Log food</h2>
-      <input type="text" id="pointsFoodName" placeholder="What did you eat?">
-      <input type="number" id="pointsFoodValue" placeholder="Points" min="0">
-      <button class="btn" onclick="addPointsEntry()">Add</button>
-    </section>
-    <section class="card">
-      <h2>Today's log</h2>
-      <div id="pointsList"></div>
-    </section>
-  </div>
-
-  <!-- SETTINGS -->
-  <div class="view" id="view-settings">
-    <button class="back" onclick="openView('home')">‹ back</button>
-    <section class="card">
-      <h2>Points tracking</h2>
-      <div class="flabel">Daily points target</div>
-      <input type="number" id="settingsDailyTarget" min="0">
-      <div class="flabel">Weekly bonus points</div>
-      <input type="number" id="settingsWeeklyBonus" min="0">
-      <button class="btn" onclick="saveSettings()">Save</button>
-    </section>
-    <section class="card">
-      <h2>Data</h2>
-      <button class="btn secondary" onclick="clearAllHubData()">Clear all hub data</button>
-      <div class="caption">Removes contacts, notes, and your points log from this device. Can't be undone.</div>
     </section>
   </div>
 
@@ -419,6 +408,10 @@
         <svg viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="16" ry="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="24" cy="22" r="10" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="20" cy="20" r="1.4" fill="var(--ink)"/><circle cx="28" cy="20" r="1.4" fill="var(--ink)"/></svg>
         <span>Whack-a-Mole</span>
       </button>
+      <button class="tile" onclick="openGame('connect4')">
+        <svg viewBox="0 0 48 48"><rect x="6" y="10" width="36" height="28" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="15" cy="19" r="3.2" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="24" cy="19" r="3.2" fill="var(--ink)"/><circle cx="33" cy="19" r="3.2" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="15" cy="29" r="3.2" fill="var(--ink)"/><circle cx="24" cy="29" r="3.2" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="33" cy="29" r="3.2" fill="var(--ink)"/></svg>
+        <span>Connect Four (2P)</span>
+      </button>
     </div>
   </div>
 
@@ -426,10 +419,24 @@
   <div class="view" id="view-tictactoe">
     <button class="back" onclick="openView('games')">‹ back</button>
     <section class="card">
-      <h2>Tic-Tac-Toe — you're X</h2>
+      <h2 id="tttTitle">Tic-Tac-Toe — you're X</h2>
       <div class="ttt-board" id="tttBoard"></div>
       <div class="game-status" id="tttStatus">Your move</div>
-      <button class="btn secondary" style="margin-top:12px;" onclick="tttReset()">New game</button>
+      <div class="timer-controls" style="margin-top:12px;">
+        <button class="btn secondary" onclick="tttToggleMode()" id="tttModeBtn">2 Player</button>
+        <button class="btn secondary" onclick="tttReset()">New game</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- CONNECT FOUR -->
+  <div class="view" id="view-connect4">
+    <button class="back" onclick="openView('games')">‹ back</button>
+    <section class="card">
+      <h2>Connect Four — pass &amp; play</h2>
+      <div class="game-status" id="c4Status">Player 1's turn</div>
+      <div class="c4-board" id="c4Board"></div>
+      <button class="btn secondary" style="margin-top:12px;" onclick="c4Reset()">New game</button>
     </section>
   </div>
 
@@ -504,8 +511,6 @@ function openView(name){
   if(name === 'notes') renderNotes();
   if(name === 'clock') { updateClock(); }
   if(name === 'phone') { dialRender(); }
-  if(name === 'points') { renderPoints(); }
-  if(name === 'settings') { openSettingsView(); }
 }
 
 function openGame(name){
@@ -515,6 +520,7 @@ function openGame(name){
   if(name === 'rps') rpsRenderScore();
   if(name === 'snake') snakeReset();
   if(name === 'whack') { whackStop(); whackRenderGrid(); document.getElementById('whackStatus').textContent = 'Tap Start'; }
+  if(name === 'connect4') c4Reset();
 }
 
 /* ---------- header clock ---------- */
@@ -755,6 +761,49 @@ function timerReset(){
 }
 timerRenderDisplay();
 
+/* ---------- stopwatch ---------- */
+let swElapsed = 0, swStart = null, swInterval = null, swRunning = false, swLaps = [];
+function swFormat(ms){
+  const totalTenths = Math.floor(ms/100);
+  const m = Math.floor(totalTenths/600);
+  const s = Math.floor(totalTenths/10)%60;
+  const t = totalTenths%10;
+  return pad(m)+':'+pad(s)+'.'+t;
+}
+function stopwatchRender(){
+  const now = swRunning ? swElapsed + (Date.now()-swStart) : swElapsed;
+  document.getElementById('stopwatchDisplay').textContent = swFormat(now);
+}
+function stopwatchStart(){
+  if(swRunning){
+    swElapsed += Date.now()-swStart;
+    swRunning = false;
+    clearInterval(swInterval);
+    document.getElementById('stopwatchStartBtn').textContent = 'Start';
+  } else {
+    swStart = Date.now();
+    swRunning = true;
+    document.getElementById('stopwatchStartBtn').textContent = 'Pause';
+    swInterval = setInterval(stopwatchRender, 100);
+  }
+}
+function stopwatchLap(){
+  if(!swRunning) return;
+  const now = swElapsed + (Date.now()-swStart);
+  swLaps.unshift(now);
+  document.getElementById('stopwatchLaps').innerHTML = swLaps.map((l,i)=>`<div class="list-item"><div class="name">Lap ${swLaps.length-i}</div><div class="num">${swFormat(l)}</div></div>`).join('');
+}
+function stopwatchReset(){
+  clearInterval(swInterval);
+  swRunning = false;
+  swElapsed = 0;
+  swLaps = [];
+  document.getElementById('stopwatchStartBtn').textContent = 'Start';
+  document.getElementById('stopwatchLaps').innerHTML = '';
+  stopwatchRender();
+}
+stopwatchRender();
+
 /* ---------- marketplace ---------- */
 function searchMarketplace(){
   const q = document.getElementById('mktQuery').value.trim();
@@ -762,125 +811,31 @@ function searchMarketplace(){
   window.open('https://www.facebook.com/marketplace/search/?query=' + encodeURIComponent(q), '_blank');
 }
 
-/* ---------- messenger ---------- */
-function openMessenger(){
+/* ---------- messenger / audible / find my ---------- */
+function openMessenger(){ launchApp('fb-messenger://', 'https://www.messenger.com/'); }
+function openAudible(){ launchApp('audible://', 'https://www.audible.com/'); }
+function openFindMy(){ launchApp('findmy://', 'https://www.icloud.com/find/'); }
+
+/* ---------- generic app launcher (scheme + web fallback + best-effort close) ---------- */
+function launchApp(scheme, fallbackUrl){
   const start = Date.now();
-  window.location = 'fb-messenger://';
+  window.location = scheme;
   setTimeout(()=>{
-    if(Date.now() - start < 1600){
-      window.location = 'https://www.messenger.com/';
+    if(Date.now() - start < 1600 && fallbackUrl){
+      window.location = fallbackUrl;
     }
+    setTimeout(()=>{ try{ window.close(); }catch(e){} }, 600);
   }, 1000);
 }
-
-/* ---------- audible ---------- */
-function openAudible(){
-  const start = Date.now();
-  window.location = 'audible://';
-  setTimeout(()=>{
-    if(Date.now() - start < 1600){
-      window.location = 'https://www.audible.com/';
-    }
-  }, 1000);
-}
-
-/* ---------- find my ---------- */
-function openFindMy(){
-  const start = Date.now();
-  window.location = 'findmy://';
-  setTimeout(()=>{
-    if(Date.now() - start < 1600){
-      window.location = 'https://www.icloud.com/find/';
-    }
-  }, 1000);
-}
-
-/* ---------- weight watchers points tracker ---------- */
-const WW_ENTRIES_KEY = 'hub_ww_entries';
-const WW_SETTINGS_KEY = 'hub_ww_settings';
-let wwEntries = JSON.parse(localStorage.getItem(WW_ENTRIES_KEY) || '[]');
-let wwSettings = JSON.parse(localStorage.getItem(WW_SETTINGS_KEY) || '{"dailyTarget":23,"weeklyBonusTarget":28,"weeklyBonusRemaining":28}');
-let pointsViewDate = new Date();
-
-function saveWwEntries(){ localStorage.setItem(WW_ENTRIES_KEY, JSON.stringify(wwEntries)); }
-function saveWwSettings(){ localStorage.setItem(WW_SETTINGS_KEY, JSON.stringify(wwSettings)); }
-function pointsDateKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-
-function pointsChangeDay(delta){
-  pointsViewDate.setDate(pointsViewDate.getDate()+delta);
-  renderPoints();
-}
-
-function renderPoints(){
-  const key = pointsDateKey(pointsViewDate);
-  document.getElementById('pointsDayLabel').textContent = pointsViewDate.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
-  const todays = wwEntries.filter(e=>e.date===key);
-  const used = todays.reduce((s,e)=>s+e.points,0);
-  document.getElementById('pointsUsedDisplay').textContent = used;
-  document.getElementById('pointsTargetLabel').textContent = wwSettings.dailyTarget;
-  const pct = Math.min(100, (used/wwSettings.dailyTarget)*100);
-  const bar = document.getElementById('pointsBar');
-  bar.style.width = pct + '%';
-  bar.className = 'bar-fill' + (pct>=100 ? ' over' : pct>=80 ? ' warn' : '');
-  document.getElementById('weeklyBonusDisplay').textContent = wwSettings.weeklyBonusRemaining;
-  const list = document.getElementById('pointsList');
-  if(todays.length === 0){
-    list.innerHTML = '<div class="empty">Nothing logged yet today.</div>';
-  } else {
-    list.innerHTML = todays.map(e=>{
-      const idx = wwEntries.indexOf(e);
-      return `<div class="list-item"><div class="name">${escapeHtml(e.name)}</div><div><span class="phone">${e.points} pts</span><button class="icon-btn danger" onclick="removePointsEntry(${idx})">✕</button></div></div>`;
-    }).join('');
-  }
-}
-
-function addPointsEntry(){
-  const name = document.getElementById('pointsFoodName').value.trim();
-  const val = parseFloat(document.getElementById('pointsFoodValue').value);
-  if(!name || isNaN(val)){ toast('Enter a food and its points'); return; }
-  wwEntries.push({date: pointsDateKey(pointsViewDate), name, points: val});
-  saveWwEntries();
-  document.getElementById('pointsFoodName').value = '';
-  document.getElementById('pointsFoodValue').value = '';
-  renderPoints();
-  toast('Logged');
-}
-function removePointsEntry(idx){
-  wwEntries.splice(idx,1);
-  saveWwEntries();
-  renderPoints();
-}
-function resetWeeklyBonus(){
-  wwSettings.weeklyBonusRemaining = wwSettings.weeklyBonusTarget;
-  saveWwSettings();
-  renderPoints();
-  toast('Weekly bonus reset');
-}
-
-/* ---------- settings ---------- */
-function openSettingsView(){
-  document.getElementById('settingsDailyTarget').value = wwSettings.dailyTarget;
-  document.getElementById('settingsWeeklyBonus').value = wwSettings.weeklyBonusTarget;
-}
-function saveSettings(){
-  const dt = parseFloat(document.getElementById('settingsDailyTarget').value);
-  const wb = parseFloat(document.getElementById('settingsWeeklyBonus').value);
-  if(dt > 0) wwSettings.dailyTarget = dt;
-  if(wb >= 0) wwSettings.weeklyBonusTarget = wb;
-  saveWwSettings();
-  renderPoints();
-  toast('Settings saved');
-}
-function clearAllHubData(){
-  if(!confirm('Clear all contacts, notes, and points data from this device?')) return;
-  localStorage.removeItem(CONTACTS_KEY);
-  localStorage.removeItem(NOTES_KEY);
-  localStorage.removeItem(WW_ENTRIES_KEY);
-  localStorage.removeItem(WW_SETTINGS_KEY);
-  contacts = []; notes = []; wwEntries = [];
-  wwSettings = {dailyTarget:23, weeklyBonusTarget:28, weeklyBonusRemaining:28};
-  toast('Cleared');
-}
+function openWeightWatchers(){ launchApp('ww://', 'https://www.weightwatchers.com/us/'); }
+function openSettingsApp(){ launchApp('app-settings:', null); }
+function openCamera(){ launchApp('camera://', null); }
+function openPhotos(){ launchApp('photos-redirect://', null); }
+function openMaps(){ launchApp('maps://', 'https://maps.apple.com/'); }
+function openCalendar(){ launchApp('calshow://', null); }
+function openReminders(){ launchApp('x-apple-reminderkit://', null); }
+function openMail(){ launchApp('message://', null); }
+function openMusic(){ launchApp('music://', 'https://music.apple.com/'); }
 
 /* ---------- phone dial pad ---------- */
 let dialNumber = '';
@@ -921,12 +876,22 @@ function startFacetime(kind){
 /* ---------- tic-tac-toe ---------- */
 let tttBoard = Array(9).fill(null);
 let tttOver = false;
+let tttVsComputer = true;
+let tttTurn = 'X';
 const TTT_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function tttToggleMode(){
+  tttVsComputer = !tttVsComputer;
+  document.getElementById('tttModeBtn').textContent = tttVsComputer ? '2 Player' : 'Vs Computer';
+  document.getElementById('tttTitle').textContent = tttVsComputer ? "Tic-Tac-Toe — you're X" : "Tic-Tac-Toe — pass & play";
+  tttReset();
+}
 
 function tttReset(){
   tttBoard = Array(9).fill(null);
   tttOver = false;
-  document.getElementById('tttStatus').textContent = 'Your move';
+  tttTurn = 'X';
+  document.getElementById('tttStatus').textContent = tttVsComputer ? 'Your move' : "X's turn";
   tttRender();
 }
 function tttRender(){
@@ -959,10 +924,21 @@ function tttComputerMove(){
 function tttEnd(w){
   tttOver = true;
   tttRender();
-  document.getElementById('tttStatus').textContent = w==='draw' ? "It's a draw" : (w==='X' ? 'You win!' : 'Computer wins');
+  if(w === 'draw'){ document.getElementById('tttStatus').textContent = "It's a draw"; return; }
+  if(tttVsComputer){ document.getElementById('tttStatus').textContent = w==='X' ? 'You win!' : 'Computer wins'; }
+  else { document.getElementById('tttStatus').textContent = w+' wins!'; }
 }
 function tttMove(i){
   if(tttBoard[i] || tttOver) return;
+  if(!tttVsComputer){
+    tttBoard[i] = tttTurn;
+    const w = tttWinner(tttBoard);
+    tttRender();
+    if(w){ tttEnd(w); return; }
+    tttTurn = tttTurn === 'X' ? 'O' : 'X';
+    document.getElementById('tttStatus').textContent = tttTurn + "'s turn";
+    return;
+  }
   tttBoard[i] = 'X';
   let w = tttWinner(tttBoard);
   tttRender();
@@ -1152,6 +1128,69 @@ function whackStop(){
   clearInterval(whackTimerInterval);
   clearTimeout(whackMoleTimeout);
   whackActiveHole = -1;
+}
+
+/* ---------- connect four ---------- */
+const C4_COLS = 7, C4_ROWS = 6;
+let c4Board = [], c4Turn = 1, c4Over = false;
+
+function c4Reset(){
+  c4Board = Array(C4_COLS*C4_ROWS).fill(0);
+  c4Turn = 1;
+  c4Over = false;
+  document.getElementById('c4Status').textContent = "Player 1's turn";
+  c4Render();
+}
+function c4Idx(col,row){ return row*C4_COLS + col; }
+function c4Render(){
+  const el = document.getElementById('c4Board');
+  let html = '';
+  for(let row=0; row<C4_ROWS; row++){
+    for(let col=0; col<C4_COLS; col++){
+      const v = c4Board[c4Idx(col,row)];
+      const cls = v===1 ? 'p1' : v===2 ? 'p2' : '';
+      html += `<button class="${cls}" onclick="c4Drop(${col})"></button>`;
+    }
+  }
+  el.innerHTML = html;
+}
+function c4Drop(col){
+  if(c4Over) return;
+  let row = -1;
+  for(let r=C4_ROWS-1; r>=0; r--){
+    if(c4Board[c4Idx(col,r)] === 0){ row = r; break; }
+  }
+  if(row === -1){ toast('That column is full'); return; }
+  c4Board[c4Idx(col,row)] = c4Turn;
+  c4Render();
+  if(c4CheckWin(col,row)){
+    c4Over = true;
+    document.getElementById('c4Status').textContent = `Player ${c4Turn} wins!`;
+    return;
+  }
+  if(c4Board.every(v=>v!==0)){
+    c4Over = true;
+    document.getElementById('c4Status').textContent = "It's a draw";
+    return;
+  }
+  c4Turn = c4Turn === 1 ? 2 : 1;
+  document.getElementById('c4Status').textContent = `Player ${c4Turn}'s turn`;
+}
+function c4CheckWin(col,row){
+  const player = c4Board[c4Idx(col,row)];
+  const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+  for(const [dx,dy] of dirs){
+    let count = 1;
+    for(const sign of [1,-1]){
+      let c = col+dx*sign, r = row+dy*sign;
+      while(c>=0 && c<C4_COLS && r>=0 && r<C4_ROWS && c4Board[c4Idx(c,r)]===player){
+        count++;
+        c += dx*sign; r += dy*sign;
+      }
+    }
+    if(count >= 4) return true;
+  }
+  return false;
 }
 
 /* ---------- utils ---------- */
