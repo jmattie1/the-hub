@@ -102,9 +102,8 @@
   .call-btn{width:64px;height:64px;border-radius:50%;background:var(--ink);color:var(--paper);border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .backspace-btn{width:52px;height:52px;border-radius:50%;background:var(--paper2);border:2px solid var(--ink);color:var(--ink);font-size:18px;cursor:pointer;}
   .embed-view{padding:0 !important;}
-  .embed-bar{display:flex;align-items:center;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--paper);}
-  .embed-bar .back{margin:0;padding:0;}
-  .embed-frame{width:100%;border:none;display:block;height:calc(100vh - 46px);}
+  .embed-bar{height:24px;border-bottom:2px solid var(--ink);background:var(--paper);}
+  .embed-frame{width:100%;border:none;display:block;height:calc(100vh - 24px);}
   .flabel{font-size:11px;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;}
   .points-daynav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;}
   .points-daynav button{background:var(--paper);border:2px solid var(--ink);border-radius:10px;width:32px;height:32px;cursor:pointer;color:var(--ink);}
@@ -123,8 +122,8 @@
   .whack-grid button.active{background:var(--paper);}
   .c4-board{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;max-width:320px;margin:12px auto;background:var(--paper2);border:2px solid var(--ink);border-radius:14px;padding:8px;}
   .c4-board button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper);cursor:pointer;padding:0;}
-  .c4-board button.p1{background:var(--ink);}
-  .c4-board button.p2{background:var(--paper2);border:2px solid var(--ink);box-shadow:inset 0 0 0 3px var(--paper);}
+  .c4-board button.p1{background:var(--ttt-x);}
+  .c4-board button.p2{background:var(--ttt-o);}
   .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:12px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
   .toast.show{opacity:1;}
 </style>
@@ -263,13 +262,12 @@
 
   <!-- EMBEDDED APPS -->
   <div class="view embed-view" id="view-embed-money">
-    <div class="embed-bar"><button class="back" onclick="openView('home')">‹ back</button></div>
+    <div class="embed-bar"></div>
     <iframe class="embed-frame" src="money-tracker.html"></iframe>
   </div>
 
   <!-- APP STORE -->
   <div class="view" id="view-appstore">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <h2>App Store</h2>
       <input type="text" id="storeSearch" placeholder="Search apps to add" oninput="renderAppStore()">
@@ -289,7 +287,6 @@
 
   <!-- PHONE -->
   <div class="view" id="view-phone">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <div class="calc-display num" id="dialDisplay">&nbsp;</div>
       <div class="dialpad-grid">
@@ -319,7 +316,6 @@
 
   <!-- FACETIME -->
   <div class="view" id="view-facetime">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <h2>FaceTime</h2>
       <input type="text" id="facetimeTarget" placeholder="Phone number or Apple ID email">
@@ -331,7 +327,6 @@
 
   <!-- CONTACTS -->
   <div class="view" id="view-contacts">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <h2>Contacts</h2>
       <div id="contactsList"></div>
@@ -355,7 +350,6 @@
 
   <!-- CALCULATOR -->
   <div class="view" id="view-calculator">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <div class="calc-display num" id="calcDisplay">0</div>
       <div class="calc-grid">
@@ -384,7 +378,6 @@
 
   <!-- CLOCK / TIMER -->
   <div class="view" id="view-clock">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <h2>Clock</h2>
       <div class="clock-big num" id="clockBig"></div>
@@ -413,7 +406,6 @@
 
   <!-- MARKETPLACE -->
   <div class="view" id="view-marketplace">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <section class="card">
       <h2>Search Marketplace</h2>
       <input type="text" id="mktQuery" placeholder="What are you looking for?">
@@ -424,7 +416,6 @@
 
   <!-- GAMES MENU -->
   <div class="view" id="view-games">
-    <button class="back" onclick="openView('home')">‹ back</button>
     <div class="grid">
       <button class="tile" onclick="openGame('tictactoe')">
         <svg viewBox="0 0 48 48"><line x1="18" y1="8" x2="18" y2="40" stroke="var(--ink)" stroke-width="2.2"/><line x1="30" y1="8" x2="30" y2="40" stroke="var(--ink)" stroke-width="2.2"/><line x1="8" y1="18" x2="40" y2="18" stroke="var(--ink)" stroke-width="2.2"/><line x1="8" y1="30" x2="40" y2="30" stroke="var(--ink)" stroke-width="2.2"/><path d="M11 21 L15 27 M15 21 L11 27" stroke="var(--ink)" stroke-width="2"/><circle cx="24" cy="24" r="4.5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
@@ -455,7 +446,6 @@
 
   <!-- TIC TAC TOE -->
   <div class="view" id="view-tictactoe">
-    <button class="back" onclick="openView('games')">‹ back</button>
     <section class="card">
       <h2 id="tttTitle">Tic-Tac-Toe — you're X</h2>
       <div class="ttt-board" id="tttBoard"></div>
@@ -469,7 +459,6 @@
 
   <!-- CONNECT FOUR -->
   <div class="view" id="view-connect4">
-    <button class="back" onclick="openView('games')">‹ back</button>
     <section class="card">
       <h2>Connect Four — pass &amp; play</h2>
       <div class="game-status" id="c4Status">Player 1's turn</div>
@@ -480,7 +469,6 @@
 
   <!-- MEMORY MATCH -->
   <div class="view" id="view-memory">
-    <button class="back" onclick="openView('games')">‹ back</button>
     <section class="card">
       <h2>Memory Match</h2>
       <div class="game-status" id="memStatus">Moves: 0</div>
@@ -491,7 +479,6 @@
 
   <!-- ROCK PAPER SCISSORS -->
   <div class="view" id="view-rps">
-    <button class="back" onclick="openView('games')">‹ back</button>
     <section class="card">
       <h2>Rock Paper Scissors</h2>
       <div class="game-status" id="rpsStatus">Pick one</div>
@@ -506,7 +493,6 @@
 
   <!-- SNAKE -->
   <div class="view" id="view-snake">
-    <button class="back" onclick="snakeStop(); openView('games')">‹ back</button>
     <section class="card">
       <div class="game-status" id="snakeStatus">Score: 0</div>
       <canvas id="snakeCanvas" width="280" height="280" style="border:2px solid var(--ink);border-radius:14px;display:block;margin:0 auto;background:var(--paper);"></canvas>
@@ -522,7 +508,6 @@
 
   <!-- WHACK-A-MOLE -->
   <div class="view" id="view-whack">
-    <button class="back" onclick="whackStop(); openView('games')">‹ back</button>
     <section class="card">
       <div class="game-status" id="whackStatus">Tap Start</div>
       <div class="whack-grid" id="whackGrid"></div>
