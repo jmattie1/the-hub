@@ -31,35 +31,35 @@
   .back{background:none;border:none;color:var(--ink);font-size:16px;margin-bottom:14px;cursor:pointer;font-family:inherit;padding:6px 0;}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
   .tile{
-    background:var(--paper2);border:2px solid var(--ink);border-radius:2px;
+    background:var(--paper2);border:2px solid var(--ink);border-radius:20px;
     padding:20px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;
     cursor:pointer;font-family:inherit;color:var(--ink);
   }
   .tile svg{width:40px;height:40px;}
   .tile span{font-size:16px;}
   .tile:active{background:var(--paper);}
-  section.card{border:2px solid var(--ink);border-radius:2px;padding:16px;margin-bottom:16px;background:var(--paper2);}
+  section.card{border:2px solid var(--ink);border-radius:18px;padding:16px;margin-bottom:16px;background:var(--paper2);}
   section.card h2{margin:0 0 10px;font-size:18px;font-weight:400;border-bottom:1px solid var(--line);padding-bottom:8px;}
   .list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);}
   .list-item:last-child{border-bottom:none;}
   .list-item .name{font-size:16px;}
   .list-item .phone{font-size:12px;color:var(--ink-soft);font-family:'Architects Daughter',cursive;}
-  .icon-btn{background:none;border:1px solid var(--ink);border-radius:2px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:13px;margin-left:6px;color:var(--ink);}
+  .icon-btn{background:none;border:1px solid var(--ink);border-radius:12px;padding:6px 8px;cursor:pointer;font-family:inherit;font-size:13px;margin-left:6px;color:var(--ink);}
   .icon-btn.danger{border-color:var(--danger);color:var(--danger);}
   input[type=text], input[type=tel], input[type=number], textarea{
-    width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:2px;
+    width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:12px;
     padding:10px;font-size:16px;font-family:inherit;color:var(--ink);margin-bottom:10px;
   }
   textarea{resize:vertical;min-height:70px;}
-  .btn{width:100%;padding:12px;border:2px solid var(--ink);border-radius:2px;background:var(--ink);color:var(--paper);font-size:16px;font-family:inherit;cursor:pointer;}
+  .btn{width:100%;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--ink);color:var(--paper);font-size:16px;font-family:inherit;cursor:pointer;}
   .btn.secondary{background:var(--paper2);color:var(--ink);}
   .empty{color:var(--ink-soft);font-size:14px;padding:14px 0;text-align:center;}
-  .note-item{border:1px dashed var(--line);border-radius:2px;padding:10px;margin-bottom:8px;}
+  .note-item{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-bottom:8px;}
   .note-item .note-text{font-size:15px;white-space:pre-wrap;margin-bottom:6px;}
   .note-actions{display:flex;justify-content:flex-end;}
-  .calc-display{background:var(--ink);color:var(--paper);font-family:Menlo,monospace;font-size:34px;text-align:right;padding:16px;border-radius:2px;margin-bottom:12px;min-height:50px;word-break:break-all;}
+  .calc-display{background:var(--ink);color:var(--paper);font-family:Menlo,monospace;font-size:34px;text-align:right;padding:16px;border-radius:12px;margin-bottom:12px;min-height:50px;word-break:break-all;}
   .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  .calc-grid button{padding:18px 0;font-size:20px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);color:var(--ink);font-family:'Architects Daughter',cursive;cursor:pointer;}
+  .calc-grid button{padding:18px 0;font-size:20px;border:2px solid var(--ink);border-radius:12px;background:var(--paper2);color:var(--ink);font-family:'Architects Daughter',cursive;cursor:pointer;}
   .calc-grid button.op{background:var(--ink);color:var(--paper);}
   .calc-grid button.wide{grid-column:span 2;}
   .clock-big{font-family:Menlo,monospace;font-size:38px;text-align:center;margin:10px 0 4px;white-space:nowrap;}
@@ -69,15 +69,15 @@
   .caption{font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.5;}
   .game-status{text-align:center;font-size:16px;margin:8px 0;}
   .ttt-board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:280px;margin:10px auto;}
-  .ttt-board button{aspect-ratio:1;font-size:32px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);color:var(--ink);font-family:Menlo,monospace;cursor:pointer;}
+  .ttt-board button{aspect-ratio:1;font-size:32px;border:2px solid var(--ink);border-radius:12px;background:var(--paper2);color:var(--ink);font-family:Menlo,monospace;cursor:pointer;}
   .ttt-board button:disabled{opacity:.9;}
   .mem-board{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:320px;margin:10px auto;}
-  .mem-board button{aspect-ratio:1;font-size:24px;border:2px solid var(--ink);border-radius:2px;background:var(--ink);color:var(--ink);cursor:pointer;}
+  .mem-board button{aspect-ratio:1;font-size:24px;border:2px solid var(--ink);border-radius:12px;background:var(--ink);color:var(--ink);cursor:pointer;}
   .mem-board button.flipped, .mem-board button.matched{background:var(--paper2);color:var(--ink);}
   .rps-row{display:flex;gap:8px;flex-wrap:wrap;}
   .rps-row button{flex:1;min-width:90px;}
   .import-row{display:flex;gap:10px;margin-bottom:10px;}
-  .file-btn{flex:1;text-align:center;padding:12px;border:2px solid var(--ink);border-radius:2px;background:var(--paper2);cursor:pointer;font-family:inherit;font-size:15px;}
+  .file-btn{flex:1;text-align:center;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--paper2);cursor:pointer;font-family:inherit;font-size:15px;}
   input[type=file]{display:none;}
   .dialpad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;margin:14px auto 0;}
   .dialpad-grid button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper2);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);}
@@ -91,7 +91,23 @@
   .embed-bar{display:flex;align-items:center;padding:10px 16px;border-bottom:2px solid var(--ink);background:var(--paper);}
   .embed-bar .back{margin:0;padding:0;}
   .embed-frame{width:100%;border:none;display:block;height:calc(100vh - 46px);}
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:2px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
+  .flabel{font-size:11px;color:var(--ink-soft);margin-bottom:4px;text-transform:uppercase;}
+  .points-daynav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;}
+  .points-daynav button{background:var(--paper);border:2px solid var(--ink);border-radius:10px;width:32px;height:32px;cursor:pointer;color:var(--ink);}
+  .points-summary{text-align:center;margin-bottom:6px;}
+  .points-summary .points-used{font-size:40px;font-weight:700;font-family:Menlo,monospace;}
+  .points-summary.small .points-used{font-size:24px;}
+  .points-target-label{color:var(--ink-soft);font-size:13px;}
+  .bar-track{height:10px;background:var(--paper);border-radius:8px;overflow:hidden;margin-top:8px;}
+  .bar-fill{height:100%;background:var(--ink);border-radius:8px;transition:width .2s;}
+  .bar-fill.warn{background:#a67c00;}
+  .bar-fill.over{background:var(--danger);}
+  .dpad{display:grid;grid-template-columns:60px 60px 60px;grid-template-rows:56px 56px;gap:8px;justify-content:center;margin:16px auto 0;}
+  .dpad button{border:2px solid var(--ink);border-radius:14px;background:var(--paper2);font-size:18px;cursor:pointer;color:var(--ink);}
+  .whack-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:14px auto;}
+  .whack-grid button{aspect-ratio:1;border-radius:50%;border:2px solid var(--ink);background:var(--paper2);font-size:28px;cursor:pointer;}
+  .whack-grid button.active{background:var(--paper);}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:12px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50;font-family:'Architects Daughter',cursive;}
   .toast.show{opacity:1;}
 </style>
 </head>
@@ -107,7 +123,7 @@
   <div class="view active" id="view-home">
     <div class="grid">
       <button class="tile" onclick="openView('phone')">
-        <svg viewBox="0 0 48 48"><rect x="14" y="6" width="20" height="36" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="21" y1="35" x2="27" y2="35" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="20" cy="14" r="1.6" fill="var(--ink)"/><circle cx="24" cy="14" r="1.6" fill="var(--ink)"/><circle cx="28" cy="14" r="1.6" fill="var(--ink)"/><circle cx="20" cy="20" r="1.6" fill="var(--ink)"/><circle cx="24" cy="20" r="1.6" fill="var(--ink)"/><circle cx="28" cy="20" r="1.6" fill="var(--ink)"/><circle cx="20" cy="26" r="1.6" fill="var(--ink)"/><circle cx="24" cy="26" r="1.6" fill="var(--ink)"/><circle cx="28" cy="26" r="1.6" fill="var(--ink)"/></svg>
+        <svg viewBox="0 0 48 48"><path d="M16 8 C16 8 13 9 13 13 C13 20 27 34 34 34 C38 34 39 31 39 31 L33 24 C33 24 31 27 29 26 C25 24 21 20 20 17 C19 15 22 13 22 13 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
         <span>Phone</span>
       </button>
       <button class="tile" onclick="openView('text')">
@@ -119,7 +135,7 @@
         <span>FaceTime</span>
       </button>
       <button class="tile" onclick="openView('contacts')">
-        <svg viewBox="0 0 48 48"><path d="M16 8 C16 8 13 9 13 13 C13 20 27 34 34 34 C38 34 39 31 39 31 L33 24 C33 24 31 27 29 26 C25 24 21 20 20 17 C19 15 22 13 22 13 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 48 48"><rect x="12" y="6" width="28" height="36" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="12" y1="13" x2="8" y2="13" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="22" x2="8" y2="22" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><line x1="12" y1="31" x2="8" y2="31" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><circle cx="26" cy="18" r="4.5" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M19 32 C19 26 33 26 33 32" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Contacts</span>
       </button>
       <button class="tile" onclick="openView('notes')">
@@ -150,22 +166,26 @@
         <svg viewBox="0 0 48 48"><path d="M10 26 C10 15 16 8 24 8 C32 8 38 15 38 26" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/><rect x="7" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="33" y="24" width="8" height="14" rx="2" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
         <span>Audible</span>
       </button>
-      <button class="tile" onclick="openView('embed-scanner')">
-        <svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="24" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 14 L19 9 H29 L32 14" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="26" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
-        <span>Price Scanner</span>
-      </button>
       <button class="tile" onclick="openView('embed-money')">
         <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 14 V34 M29 18 C29 18 27 16 23 16 C20 16 18 17.5 18 20 C18 25 30 22 30 28 C30 30.5 27.5 32 24 32 C20 32 18 30 18 30" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/></svg>
         <span>Money</span>
+      </button>
+      <button class="tile" onclick="openView('points')">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 24 L21 29 L32 18" fill="none" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Points</span>
+      </button>
+      <button class="tile" onclick="openView('settings')">
+        <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 6 v5 M24 37 v5 M42 24 h-5 M11 24 H6 M36.5 11.5 l-3.5 3.5 M15 33 l-3.5 3.5 M36.5 36.5 l-3.5-3.5 M15 15 l-3.5-3.5" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span>Settings</span>
+      </button>
+      <button class="tile" onclick="openFindMy()">
+        <svg viewBox="0 0 48 48"><path d="M24 6 C17 6 12 11 12 18 C12 27 24 42 24 42 C24 42 36 27 36 18 C36 11 31 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
+        <span>Find My</span>
       </button>
     </div>
   </div>
 
   <!-- EMBEDDED APPS -->
-  <div class="view embed-view" id="view-embed-scanner">
-    <div class="embed-bar"><button class="back" onclick="openView('home')">‹ back</button></div>
-    <iframe class="embed-frame" src="flip-price-scanner.html"></iframe>
-  </div>
   <div class="view embed-view" id="view-embed-money">
     <div class="embed-bar"><button class="back" onclick="openView('home')">‹ back</button></div>
     <iframe class="embed-frame" src="money-tracker.html"></iframe>
@@ -322,6 +342,59 @@
     </section>
   </div>
 
+  <!-- POINTS TRACKER -->
+  <div class="view" id="view-points">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <div class="points-daynav">
+        <button onclick="pointsChangeDay(-1)">‹</button>
+        <div id="pointsDayLabel"></div>
+        <button onclick="pointsChangeDay(1)">›</button>
+      </div>
+      <div class="points-summary">
+        <div class="points-used num" id="pointsUsedDisplay">0</div>
+        <div class="points-target-label">of <span id="pointsTargetLabel">23</span> points</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="pointsBar" style="width:0%"></div></div>
+    </section>
+    <section class="card">
+      <h2>Weekly bonus points</h2>
+      <div class="points-summary small">
+        <div class="points-used num" id="weeklyBonusDisplay">0</div>
+        <div class="points-target-label">remaining</div>
+      </div>
+      <button class="btn secondary" onclick="resetWeeklyBonus()">Reset for new week</button>
+    </section>
+    <section class="card">
+      <h2>Log food</h2>
+      <input type="text" id="pointsFoodName" placeholder="What did you eat?">
+      <input type="number" id="pointsFoodValue" placeholder="Points" min="0">
+      <button class="btn" onclick="addPointsEntry()">Add</button>
+    </section>
+    <section class="card">
+      <h2>Today's log</h2>
+      <div id="pointsList"></div>
+    </section>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="view" id="view-settings">
+    <button class="back" onclick="openView('home')">‹ back</button>
+    <section class="card">
+      <h2>Points tracking</h2>
+      <div class="flabel">Daily points target</div>
+      <input type="number" id="settingsDailyTarget" min="0">
+      <div class="flabel">Weekly bonus points</div>
+      <input type="number" id="settingsWeeklyBonus" min="0">
+      <button class="btn" onclick="saveSettings()">Save</button>
+    </section>
+    <section class="card">
+      <h2>Data</h2>
+      <button class="btn secondary" onclick="clearAllHubData()">Clear all hub data</button>
+      <div class="caption">Removes contacts, notes, and your points log from this device. Can't be undone.</div>
+    </section>
+  </div>
+
   <!-- GAMES MENU -->
   <div class="view" id="view-games">
     <button class="back" onclick="openView('home')">‹ back</button>
@@ -337,6 +410,14 @@
       <button class="tile" onclick="openGame('rps')">
         <svg viewBox="0 0 48 48"><path d="M16 26 V14 a3 3 0 0 1 6 0 v8 M22 22 V10 a3 3 0 0 1 6 0 v12 M28 22 V13 a3 3 0 0 1 6 0 v13 M16 26 v6 a10 10 0 0 0 10 10 h2 a10 10 0 0 0 10 -10 v-8" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span>Rock Paper Scissors</span>
+      </button>
+      <button class="tile" onclick="openGame('snake')">
+        <svg viewBox="0 0 48 48"><path d="M8 34 h10 v-10 h10 v-10 h12" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="36" cy="10" r="3" fill="var(--ink)"/></svg>
+        <span>Snake</span>
+      </button>
+      <button class="tile" onclick="openGame('whack')">
+        <svg viewBox="0 0 48 48"><ellipse cx="24" cy="36" rx="16" ry="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="24" cy="22" r="10" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="20" cy="20" r="1.4" fill="var(--ink)"/><circle cx="28" cy="20" r="1.4" fill="var(--ink)"/></svg>
+        <span>Whack-a-Mole</span>
       </button>
     </div>
   </div>
@@ -378,6 +459,32 @@
     </section>
   </div>
 
+  <!-- SNAKE -->
+  <div class="view" id="view-snake">
+    <button class="back" onclick="snakeStop(); openView('games')">‹ back</button>
+    <section class="card">
+      <div class="game-status" id="snakeStatus">Score: 0</div>
+      <canvas id="snakeCanvas" width="280" height="280" style="border:2px solid var(--ink);border-radius:14px;display:block;margin:0 auto;background:var(--paper);"></canvas>
+      <div class="dpad">
+        <button style="grid-column:2;grid-row:1;" onclick="snakeSetDir(0,-1)">▲</button>
+        <button style="grid-column:1;grid-row:2;" onclick="snakeSetDir(-1,0)">◀</button>
+        <button style="grid-column:2;grid-row:2;" onclick="snakeSetDir(0,1)">▼</button>
+        <button style="grid-column:3;grid-row:2;" onclick="snakeSetDir(1,0)">▶</button>
+      </div>
+      <button class="btn secondary" style="margin-top:12px;" onclick="snakeReset()">New game</button>
+    </section>
+  </div>
+
+  <!-- WHACK-A-MOLE -->
+  <div class="view" id="view-whack">
+    <button class="back" onclick="whackStop(); openView('games')">‹ back</button>
+    <section class="card">
+      <div class="game-status" id="whackStatus">Tap Start</div>
+      <div class="whack-grid" id="whackGrid"></div>
+      <button class="btn secondary" style="margin-top:12px;" onclick="whackStart()">Start (30s)</button>
+    </section>
+  </div>
+
 </main>
 
 <div class="toast" id="toast"></div>
@@ -397,6 +504,8 @@ function openView(name){
   if(name === 'notes') renderNotes();
   if(name === 'clock') { updateClock(); }
   if(name === 'phone') { dialRender(); }
+  if(name === 'points') { renderPoints(); }
+  if(name === 'settings') { openSettingsView(); }
 }
 
 function openGame(name){
@@ -404,6 +513,8 @@ function openGame(name){
   if(name === 'tictactoe') tttReset();
   if(name === 'memory') memReset();
   if(name === 'rps') rpsRenderScore();
+  if(name === 'snake') snakeReset();
+  if(name === 'whack') { whackStop(); whackRenderGrid(); document.getElementById('whackStatus').textContent = 'Tap Start'; }
 }
 
 /* ---------- header clock ---------- */
@@ -673,6 +784,104 @@ function openAudible(){
   }, 1000);
 }
 
+/* ---------- find my ---------- */
+function openFindMy(){
+  const start = Date.now();
+  window.location = 'findmy://';
+  setTimeout(()=>{
+    if(Date.now() - start < 1600){
+      window.location = 'https://www.icloud.com/find/';
+    }
+  }, 1000);
+}
+
+/* ---------- weight watchers points tracker ---------- */
+const WW_ENTRIES_KEY = 'hub_ww_entries';
+const WW_SETTINGS_KEY = 'hub_ww_settings';
+let wwEntries = JSON.parse(localStorage.getItem(WW_ENTRIES_KEY) || '[]');
+let wwSettings = JSON.parse(localStorage.getItem(WW_SETTINGS_KEY) || '{"dailyTarget":23,"weeklyBonusTarget":28,"weeklyBonusRemaining":28}');
+let pointsViewDate = new Date();
+
+function saveWwEntries(){ localStorage.setItem(WW_ENTRIES_KEY, JSON.stringify(wwEntries)); }
+function saveWwSettings(){ localStorage.setItem(WW_SETTINGS_KEY, JSON.stringify(wwSettings)); }
+function pointsDateKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+
+function pointsChangeDay(delta){
+  pointsViewDate.setDate(pointsViewDate.getDate()+delta);
+  renderPoints();
+}
+
+function renderPoints(){
+  const key = pointsDateKey(pointsViewDate);
+  document.getElementById('pointsDayLabel').textContent = pointsViewDate.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
+  const todays = wwEntries.filter(e=>e.date===key);
+  const used = todays.reduce((s,e)=>s+e.points,0);
+  document.getElementById('pointsUsedDisplay').textContent = used;
+  document.getElementById('pointsTargetLabel').textContent = wwSettings.dailyTarget;
+  const pct = Math.min(100, (used/wwSettings.dailyTarget)*100);
+  const bar = document.getElementById('pointsBar');
+  bar.style.width = pct + '%';
+  bar.className = 'bar-fill' + (pct>=100 ? ' over' : pct>=80 ? ' warn' : '');
+  document.getElementById('weeklyBonusDisplay').textContent = wwSettings.weeklyBonusRemaining;
+  const list = document.getElementById('pointsList');
+  if(todays.length === 0){
+    list.innerHTML = '<div class="empty">Nothing logged yet today.</div>';
+  } else {
+    list.innerHTML = todays.map(e=>{
+      const idx = wwEntries.indexOf(e);
+      return `<div class="list-item"><div class="name">${escapeHtml(e.name)}</div><div><span class="phone">${e.points} pts</span><button class="icon-btn danger" onclick="removePointsEntry(${idx})">✕</button></div></div>`;
+    }).join('');
+  }
+}
+
+function addPointsEntry(){
+  const name = document.getElementById('pointsFoodName').value.trim();
+  const val = parseFloat(document.getElementById('pointsFoodValue').value);
+  if(!name || isNaN(val)){ toast('Enter a food and its points'); return; }
+  wwEntries.push({date: pointsDateKey(pointsViewDate), name, points: val});
+  saveWwEntries();
+  document.getElementById('pointsFoodName').value = '';
+  document.getElementById('pointsFoodValue').value = '';
+  renderPoints();
+  toast('Logged');
+}
+function removePointsEntry(idx){
+  wwEntries.splice(idx,1);
+  saveWwEntries();
+  renderPoints();
+}
+function resetWeeklyBonus(){
+  wwSettings.weeklyBonusRemaining = wwSettings.weeklyBonusTarget;
+  saveWwSettings();
+  renderPoints();
+  toast('Weekly bonus reset');
+}
+
+/* ---------- settings ---------- */
+function openSettingsView(){
+  document.getElementById('settingsDailyTarget').value = wwSettings.dailyTarget;
+  document.getElementById('settingsWeeklyBonus').value = wwSettings.weeklyBonusTarget;
+}
+function saveSettings(){
+  const dt = parseFloat(document.getElementById('settingsDailyTarget').value);
+  const wb = parseFloat(document.getElementById('settingsWeeklyBonus').value);
+  if(dt > 0) wwSettings.dailyTarget = dt;
+  if(wb >= 0) wwSettings.weeklyBonusTarget = wb;
+  saveWwSettings();
+  renderPoints();
+  toast('Settings saved');
+}
+function clearAllHubData(){
+  if(!confirm('Clear all contacts, notes, and points data from this device?')) return;
+  localStorage.removeItem(CONTACTS_KEY);
+  localStorage.removeItem(NOTES_KEY);
+  localStorage.removeItem(WW_ENTRIES_KEY);
+  localStorage.removeItem(WW_SETTINGS_KEY);
+  contacts = []; notes = []; wwEntries = [];
+  wwSettings = {dailyTarget:23, weeklyBonusTarget:28, weeklyBonusRemaining:28};
+  toast('Cleared');
+}
+
 /* ---------- phone dial pad ---------- */
 let dialNumber = '';
 function dialRender(){
@@ -831,6 +1040,118 @@ function rpsPlay(choice){
   }
   document.getElementById('rpsStatus').textContent = msg;
   rpsRenderScore();
+}
+
+/* ---------- snake ---------- */
+const SNAKE_GRID = 14, SNAKE_CELL = 20;
+let snakeBody = [], snakeDir = {x:1,y:0}, snakeNextDir = {x:1,y:0}, snakeFood = {x:10,y:7};
+let snakeInterval = null, snakeScore = 0, snakeAlive = true;
+
+function snakeReset(){
+  snakeBody = [{x:7,y:7},{x:6,y:7},{x:5,y:7}];
+  snakeDir = {x:1,y:0};
+  snakeNextDir = {x:1,y:0};
+  snakeScore = 0;
+  snakeAlive = true;
+  snakePlaceFood();
+  document.getElementById('snakeStatus').textContent = 'Score: 0';
+  if(snakeInterval) clearInterval(snakeInterval);
+  snakeInterval = setInterval(snakeTick, 160);
+  snakeDraw();
+}
+function snakeStop(){
+  if(snakeInterval) clearInterval(snakeInterval);
+  snakeAlive = false;
+}
+function snakePlaceFood(){
+  let f;
+  do { f = {x:Math.floor(Math.random()*SNAKE_GRID), y:Math.floor(Math.random()*SNAKE_GRID)}; }
+  while(snakeBody.some(s=>s.x===f.x && s.y===f.y));
+  snakeFood = f;
+}
+function snakeSetDir(x,y){
+  if(snakeDir.x === -x && snakeDir.y === -y) return;
+  snakeNextDir = {x,y};
+}
+function snakeTick(){
+  if(!snakeAlive) return;
+  snakeDir = snakeNextDir;
+  const head = {x:snakeBody[0].x+snakeDir.x, y:snakeBody[0].y+snakeDir.y};
+  if(head.x<0 || head.x>=SNAKE_GRID || head.y<0 || head.y>=SNAKE_GRID || snakeBody.some(s=>s.x===head.x && s.y===head.y)){
+    snakeAlive = false;
+    clearInterval(snakeInterval);
+    document.getElementById('snakeStatus').textContent = 'Game over — score: ' + snakeScore;
+    return;
+  }
+  snakeBody.unshift(head);
+  if(head.x === snakeFood.x && head.y === snakeFood.y){
+    snakeScore++;
+    document.getElementById('snakeStatus').textContent = 'Score: ' + snakeScore;
+    snakePlaceFood();
+  } else {
+    snakeBody.pop();
+  }
+  snakeDraw();
+}
+function snakeDraw(){
+  const canvas = document.getElementById('snakeCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#232323';
+  snakeBody.forEach(s=>ctx.fillRect(s.x*SNAKE_CELL+1, s.y*SNAKE_CELL+1, SNAKE_CELL-2, SNAKE_CELL-2));
+  ctx.beginPath();
+  ctx.arc(snakeFood.x*SNAKE_CELL+SNAKE_CELL/2, snakeFood.y*SNAKE_CELL+SNAKE_CELL/2, SNAKE_CELL/2-3, 0, Math.PI*2);
+  ctx.fill();
+}
+
+/* ---------- whack-a-mole ---------- */
+let whackScore = 0, whackTimeLeft = 30, whackTimerInterval = null, whackMoleTimeout = null, whackActiveHole = -1, whackRunning = false;
+
+function whackRenderGrid(){
+  const el = document.getElementById('whackGrid');
+  el.innerHTML = Array(9).fill(0).map((_,i)=>`<button class="${i===whackActiveHole?'active':''}" onclick="whackHit(${i})">${i===whackActiveHole?'🐹':''}</button>`).join('');
+}
+function whackStart(){
+  whackStop();
+  whackScore = 0;
+  whackTimeLeft = 30;
+  whackRunning = true;
+  document.getElementById('whackStatus').textContent = `Score: 0 · Time: 30s`;
+  whackPopMole();
+  whackTimerInterval = setInterval(()=>{
+    whackTimeLeft--;
+    document.getElementById('whackStatus').textContent = `Score: ${whackScore} · Time: ${whackTimeLeft}s`;
+    if(whackTimeLeft <= 0){
+      whackStop();
+      document.getElementById('whackStatus').textContent = `Time's up — score: ${whackScore}`;
+    }
+  }, 1000);
+}
+function whackPopMole(){
+  if(!whackRunning) return;
+  whackActiveHole = Math.floor(Math.random()*9);
+  whackRenderGrid();
+  whackMoleTimeout = setTimeout(()=>{
+    whackActiveHole = -1;
+    whackRenderGrid();
+    if(whackRunning) whackPopMole();
+  }, 550 + Math.random()*350);
+}
+function whackHit(i){
+  if(!whackRunning || i !== whackActiveHole) return;
+  whackScore++;
+  document.getElementById('whackStatus').textContent = `Score: ${whackScore} · Time: ${whackTimeLeft}s`;
+  whackActiveHole = -1;
+  whackRenderGrid();
+  clearTimeout(whackMoleTimeout);
+  whackPopMole();
+}
+function whackStop(){
+  whackRunning = false;
+  clearInterval(whackTimerInterval);
+  clearTimeout(whackMoleTimeout);
+  whackActiveHole = -1;
 }
 
 /* ---------- utils ---------- */
