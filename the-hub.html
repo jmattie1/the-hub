@@ -199,10 +199,10 @@
         <svg viewBox="0 0 48 48"><path d="M24 6 C17 6 12 11 12 18 C12 27 24 42 24 42 C24 42 36 27 36 18 C36 11 31 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="18" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/></svg>
         <span>Find My</span>
       </button>
-      <button class="tile" onclick="openCamera()">
+      <label class="tile" for="cameraInput">
         <svg viewBox="0 0 48 48"><rect x="6" y="14" width="36" height="24" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 14 L19 9 H29 L32 14" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="26" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/></svg>
         <span>Camera</span>
-      </button>
+      </label>
       <button class="tile" onclick="openPhotos()">
         <svg viewBox="0 0 48 48"><rect x="8" y="8" width="26" height="26" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><rect x="14" y="14" width="26" height="26" rx="4" fill="var(--paper2)" stroke="var(--ink)" stroke-width="2.2"/><circle cx="22" cy="24" r="3" fill="none" stroke="var(--ink)" stroke-width="1.8"/><path d="M16 33 L24 25 L30 31 L34 27 L39 33" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/></svg>
         <span>Camera Roll</span>
@@ -844,25 +844,43 @@ function openMessenger(){ launchApp('fb-messenger://', 'https://www.messenger.co
 function openAudible(){ launchApp('audible://', 'https://www.audible.com/'); }
 function openFindMy(){ launchApp('findmy://', 'https://www.icloud.com/find/'); }
 
-/* ---------- generic app launcher (scheme + web fallback + auto-return home) ---------- */
+/* ---------- generic app launcher (scheme + web fallback + auto-return home) ----------
+   Uses visibilitychange to tell the two failure modes apart:
+   - if the OS actually switches to the native app, this tab goes "hidden" — so we
+     cancel the website fallback entirely, and reset to Slate's home screen for
+     whenever you come back.
+   - if nothing happens (app not installed, or the scheme just doesn't work), the tab
+     never goes hidden, so after a beat we fall back to the website instead. */
 function launchApp(scheme, fallbackUrl){
-  const start = Date.now();
+  let appOpened = false;
+  function handleVisibility(){
+    if(document.hidden){
+      appOpened = true;
+    } else if(appOpened){
+      openView('home');
+      document.removeEventListener('visibilitychange', handleVisibility);
+    }
+  }
+  document.addEventListener('visibilitychange', handleVisibility);
   window.location = scheme;
   setTimeout(()=>{
-    if(Date.now() - start < 1600 && fallbackUrl){
-      window.location = fallbackUrl;
+    if(!appOpened){
+      if(fallbackUrl) window.location = fallbackUrl;
+      document.removeEventListener('visibilitychange', handleVisibility);
     }
-  }, 1000);
-  // whenever this tab is next foregrounded, if it's been ~3s or more since we
-  // launched, snap back to the home grid so you're not stuck on this tile.
-  setTimeout(()=>{ openView('home'); }, 3000);
+  }, 1200);
 }
-function openSettingsApp(){ launchApp('app-settings:', null); }
+function openSettingsApp(){
+  toast("iOS blocks apps' Settings shortcut from web pages — if nothing happens, open Settings manually");
+  launchApp('app-settings:', null);
+}
 /* there's no real, documented way for a web page to launch iOS's native Camera app —
    'camera://' never worked. This uses the actual working browser API: a file input
-   with capture=environment opens the real camera UI, and the Web Share sheet (which
-   includes "Save Image") is the real way to get the photo into Photos afterward. */
-function openCamera(){ document.getElementById('cameraInput').click(); }
+   with capture=environment opens the real camera UI. The Camera tile is a <label for=
+   "cameraInput"> rather than a button with a JS .click() — iOS Safari is more
+   consistent about opening the file picker when the label itself is the trigger.
+   The Web Share sheet (which includes "Save Image") is the real way to get the photo
+   into Photos afterward. */
 async function cameraCaptured(e){
   const file = e.target.files[0];
   e.target.value = '';
@@ -912,7 +930,8 @@ const APP_CATALOG = [
   {name:'Waze', scheme:'waze://', url:'https://waze.com'},
   {name:'Yelp', scheme:'yelp://', url:'https://www.yelp.com'},
   {name:'Twitch', scheme:'twitch://', url:'https://www.twitch.tv'},
-  {name:'Zoom', scheme:'zoomus://', url:'https://zoom.us'}
+  {name:'Zoom', scheme:'zoomus://', url:'https://zoom.us'},
+  {name:'Bambu Handy', scheme:'bambuhandy://', url:'https://bambulab.com/en/download'}
 ];
 
 function getCustomApps(){ return JSON.parse(localStorage.getItem('hub_custom_apps') || '[]'); }
@@ -1014,8 +1033,8 @@ function renderHiddenList(){
 function initHomeTiles(){
   const grid = document.getElementById('homeGrid');
   const hiddenIds = getHiddenTiles().map(h=>h.id);
-  [...grid.querySelectorAll('button.tile:not(.custom-tile)')].forEach(tile=>{
-    const oc = tile.getAttribute('onclick') || '';
+  [...grid.querySelectorAll('.tile:not(.custom-tile)')].forEach(tile=>{
+    const oc = tile.getAttribute('onclick') || tile.getAttribute('for') || '';
     const id = 'builtin:' + oc;
     tile.setAttribute('data-tile-id', id);
     const span = tile.querySelector('span');
@@ -1025,7 +1044,7 @@ function initHomeTiles(){
       const del = document.createElement('span');
       del.className = 'tile-badge';
       del.textContent = '✕';
-      del.onclick = (e)=>{ e.stopPropagation(); hideTile(id, label, false); };
+      del.onclick = (e)=>{ e.stopPropagation(); e.preventDefault(); hideTile(id, label, false); };
       tile.appendChild(del);
     }
   });
