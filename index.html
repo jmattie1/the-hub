@@ -915,7 +915,10 @@ function openCalendar(){ launchApp('calshow://', null); }
 function openReminders(){ launchApp('x-apple-reminderkit://', null); }
 function openMail(){ launchApp('message://', null); }
 function openMusic(){ launchApp('music://', 'https://music.apple.com/'); }
-function openMessagesApp(){ launchApp('sms:', null); }
+/* tries the (unverified) scheme for opening Messages straight to your conversation
+   list; if that doesn't do anything, it falls back to 'sms:' — still the real
+   Messages/iMessage app, just landing on a new-message screen instead of the list */
+function openMessagesApp(){ launchApp('messages://', 'sms:'); }
 function openNotesApp(){ launchApp('mobilenotes://', null); }
 function openClaude(){ launchApp('claude://', 'https://claude.ai/'); }
 function openTesla(){ launchApp('tesla://', 'https://www.tesla.com/'); }
