@@ -24,7 +24,7 @@
     padding-bottom:20px;
   }
   .num{font-family:-apple-system,Menlo,monospace;}
-  header{height:calc(env(safe-area-inset-top, 0px) + 44px);background:var(--paper);}
+  header{height:env(safe-area-inset-top, 0px);background:var(--paper);}
   main{max-width:480px;margin:0 auto;padding:18px;}
   .view{display:none;}
   .view.active{display:block;}
@@ -44,21 +44,37 @@
     align-items:center;justify-content:center;font-size:14px;cursor:pointer;z-index:5;}
   .grid.edit-mode .tile-badge{display:flex;}
   .tile.dragging{opacity:.5;}
-  .edit-toggle-row{display:flex;justify-content:flex-end;margin:-4px 0 4px;}
-  .edit-toggle-row .back{margin:0;}
   .app-icon-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);
     display:flex;align-items:center;justify-content:center;font-size:16px;
     font-family:Menlo,monospace;background:var(--paper2);}
-  .app-icon-img{width:40px;height:40px;border-radius:12px;object-fit:cover;border:2px solid var(--ink);}
+  .app-icon-img{width:40px;height:40px;border-radius:12px;object-fit:cover;border:2px solid var(--ink);
+    background:var(--paper2);padding:3px;box-sizing:border-box;}
   .store-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:10px 0;border-bottom:1px dashed var(--line);}
   .store-item:last-child{border-bottom:none;}
   .store-item .store-name{font-size:16px;flex:1;}
-  .store-item .store-icon{width:36px;height:36px;border-radius:9px;object-fit:cover;border:1px solid var(--line);}
+  .store-item .store-icon{width:36px;height:36px;border-radius:9px;object-fit:cover;border:1px solid var(--line);
+    background:var(--paper2);padding:2px;box-sizing:border-box;}
   .toggle-row{display:flex;gap:8px;margin-bottom:14px;}
   .toggle-row button{flex:1;padding:10px 4px;border:2px solid var(--ink);border-radius:12px;
     background:var(--paper2);color:var(--ink);font-family:inherit;font-size:14px;cursor:pointer;}
   .toggle-row button.active{background:var(--ink);color:var(--paper);}
+  .pref-slider{width:100%;margin:6px 0 16px;accent-color:var(--ink);}
+  .switch-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;}
+  .switch{position:relative;display:inline-block;width:50px;height:28px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .tswitch{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+    background:var(--paper2);border:2px solid var(--ink);border-radius:16px;transition:.2s;}
+  .switch .tswitch:before{position:absolute;content:"";height:16px;width:16px;left:3px;top:3px;
+    background:var(--ink);border-radius:50%;transition:.2s;}
+  .switch input:checked + .tswitch{background:var(--ink);}
+  .switch input:checked + .tswitch:before{background:var(--paper);transform:translateX(20px);}
+  body.theme-glass{background:linear-gradient(150deg, var(--paper), var(--paper2));}
+  body.theme-glass .tile, body.theme-glass section.card{
+    background:rgba(255,255,255,0.22);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.45);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+  body.theme-glass header{background:rgba(255,255,255,0.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+  body.theme-glass .tile:active{background:rgba(255,255,255,0.35);}
   .color-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;}
   .color-row input[type=color]{width:56px;height:36px;border:2px solid var(--ink);border-radius:8px;padding:0;background:none;cursor:pointer;}
   body.cols-3 .grid{grid-template-columns:1fr 1fr 1fr;}
@@ -157,7 +173,6 @@
 <main>
 
   <div class="view active" id="view-home">
-    <div class="edit-toggle-row"><button class="back" onclick="toggleEditMode()" id="editModeBtn">Edit</button></div>
     <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none" onchange="cameraCaptured(event)">
     <div class="grid" id="homeGrid">
       <button class="tile" onclick="openView('phone')">
@@ -307,11 +322,7 @@
     <section class="card">
       <h2>Appearance</h2>
       <div class="flabel">Tile size</div>
-      <div class="toggle-row">
-        <button class="size-btn" data-size="compact" onclick="setSizePref('compact')">Compact</button>
-        <button class="size-btn" data-size="regular" onclick="setSizePref('regular')">Regular</button>
-        <button class="size-btn" data-size="large" onclick="setSizePref('large')">Large</button>
-      </div>
+      <input type="range" class="pref-slider" id="sizeSlider" min="1" max="3" step="1" value="2" oninput="setSizePrefFromSlider(this.value)">
       <div class="flabel">Columns</div>
       <div class="toggle-row">
         <button class="cols-btn" data-cols="2" onclick="setColsPref('2')">2 across</button>
@@ -320,22 +331,21 @@
       <div class="flabel">Colors</div>
       <div class="color-row"><div class="store-name">Ink (lines &amp; text)</div><input type="color" id="inkColorPicker" oninput="setInkColor(this.value)"></div>
       <div class="color-row"><div class="store-name">Paper (background)</div><input type="color" id="paperColorPicker" oninput="setPaperColor(this.value)"></div>
+      <div class="switch-row"><div class="store-name">Liquid glass</div><label class="switch"><input type="checkbox" id="glassToggle" onchange="setThemePref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="caption">A translucent, frosted look for tiles and cards instead of flat paper.</div>
+      <div class="switch-row"><div class="store-name">Match app icons</div><label class="switch"><input type="checkbox" id="matchIconsToggle" onchange="setMatchIconsPref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="caption">When on, apps you've added show their real icon instead of Clean Slate's pencil version.</div>
       <button class="icon-btn" style="margin-top:8px;" onclick="resetAppearance()">Reset appearance</button>
     </section>
     <section class="card">
-      <h2>Home screen</h2>
-      <button class="btn secondary" onclick="toggleEditMode()" id="editModeBtn2">Edit tiles</button>
-      <div class="caption">You can also just press and hold any tile to start rearranging — no need to tap Edit first. This button just shows the ✕ delete badges without holding anything.</div>
+      <h2>Behavior</h2>
+      <div class="switch-row"><div class="store-name">Haptic feedback</div><label class="switch"><input type="checkbox" id="hapticsToggle" onchange="setHapticsPref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><div class="store-name">Snap back to Home after opening an app</div><label class="switch"><input type="checkbox" id="autoHomeToggle" onchange="setAutoHomePref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="caption">Press and hold any tile to rearrange it. Tap anywhere outside the tiles to finish.</div>
     </section>
     <section class="card">
       <h2>Hidden / removed tiles</h2>
       <div id="hiddenList"></div>
-    </section>
-    <section class="card">
-      <h2>Message Claude</h2>
-      <textarea id="suggestBox" rows="3" placeholder="Note an idea or app you want added here, then copy it and paste it to Claude next time you're chatting."></textarea>
-      <button class="btn secondary" onclick="copySuggestion()">Copy message</button>
-      <div class="caption">This is the closest honest version of an "always-on chat bot": Clean Slate is a static page with no server, so it has no way to reach Claude or anyone else on its own. Write your note, copy it, then paste it into your chat with Claude — that's what actually gets the app updated.</div>
     </section>
     <section class="card">
       <h2>Reset</h2>
@@ -904,7 +914,7 @@ function launchApp(scheme, fallbackUrl){
     if(document.hidden){
       markOpened();
     } else if(appOpened){
-      openView('home');
+      if(autoHomeOn()) openView('home');
       cleanup();
     }
   }
@@ -958,7 +968,11 @@ function openMusic(){ launchApp('music://', 'https://music.apple.com/'); }
 /* tries the (unverified) scheme for opening Messages straight to your conversation
    list; if that doesn't do anything, it falls back to 'sms:' — still the real
    Messages/iMessage app, just landing on a new-message screen instead of the list */
-function openMessagesApp(){ launchApp('messages://', 'sms:'); }
+/* no fallback on purpose: 'sms:' always forces a blank new-message compose
+   screen, which is exactly the behavior you didn't want. Better to just try
+   the real Messages app and do nothing if it's not there, than to always
+   land on a new text. */
+function openMessagesApp(){ launchApp('messages://', null); }
 function openNotesApp(){ launchApp('mobilenotes://', null); }
 function openClaude(){ launchApp('claude://', 'https://claude.ai/'); }
 function openTesla(){ launchApp('tesla://', 'https://www.tesla.com/'); }
@@ -1015,11 +1029,24 @@ function removeCustomApp(name){
 function launchCustomApp(name){
   const app = getCustomApps().find(a=>a.name===name) || APP_CATALOG.find(a=>a.name===name);
   if(!app) return;
-  if(app.scheme) launchApp(app.scheme, app.url);
-  else window.open(app.url, '_blank');
+  if(app.scheme){
+    launchApp(app.scheme, app.url);
+  } else if(app.trackId){
+    /* not one of Slate's favorites, so there's no known working scheme — but
+       every App Store listing can be opened straight in the native App Store
+       app (not a Safari tab) via itms-apps://, using the id iTunes's search
+       API gave us. Routes through the same launchApp helper as everything
+       else, so it navigates in place (no stray browser tab left behind) and
+       snaps back to Clean Slate when you return, same as any other app. */
+    launchApp('itms-apps://itunes.apple.com/app/id' + app.trackId, app.url);
+  } else {
+    launchApp(app.url, null);
+  }
 }
-function tileIconHtml(app, size){
-  const s = size || 40;
+function tileIconHtml(app){
+  const wantReal = matchIconsOn();
+  if(wantReal && app.iconImg) return `<img class="app-icon-img" src="${app.iconImg}" alt="">`;
+  if(wantReal && !app.iconImg && app.icon) ensureRealIcon(app);
   if(app.icon) return `<svg viewBox="0 0 48 48">${app.icon}</svg>`;
   if(app.iconImg) return `<img class="app-icon-img" src="${app.iconImg}" alt="">`;
   return `<div class="app-icon-circle">${escapeHtml(app.name.charAt(0).toUpperCase())}</div>`;
@@ -1069,7 +1096,7 @@ async function searchAppStore(q){
     const data = await res.json();
     const results = (data.results || []).map(r=>{
       const known = APP_CATALOG.find(a=>a.name.toLowerCase() === (r.trackName||'').toLowerCase());
-      return known || { name: r.trackName, scheme: null, url: r.trackViewUrl, iconImg: r.artworkUrl60 };
+      return known || { name: r.trackName, scheme: null, url: r.trackViewUrl, iconImg: r.artworkUrl60, trackId: r.trackId };
     });
     renderStoreList(results);
   }catch(err){
@@ -1159,10 +1186,16 @@ let longPressTimer = null;
 let touchStartX = 0, touchStartY = 0;
 function setEditModeUI(on){
   document.getElementById('homeGrid').classList.toggle('edit-mode', on);
-  document.getElementById('editModeBtn').textContent = on ? 'Done' : 'Edit';
-  const btn2 = document.getElementById('editModeBtn2');
-  if(btn2) btn2.textContent = on ? 'Done editing' : 'Edit tiles';
 }
+/* no Edit/Done button anymore — press-and-hold a tile to enter rearrange mode,
+   then tap anywhere that isn't a tile (blank grid space, a card, the header)
+   to exit it, matching how iOS itself works. */
+document.addEventListener('click', (e)=>{
+  const grid = document.getElementById('homeGrid');
+  if(!grid || !grid.classList.contains('edit-mode')) return;
+  if(e.target.closest('.tile')) return;
+  setEditModeUI(false);
+});
 function attachDragHandlers(tile){
   if(tile.dataset.dragBound) return;
   tile.dataset.dragBound = '1';
@@ -1177,7 +1210,7 @@ function attachDragHandlers(tile){
       dragTile = tile;
       setEditModeUI(true);
       tile.classList.add('dragging');
-      if(navigator.vibrate) navigator.vibrate(15);
+      if(navigator.vibrate && hapticsOn()) navigator.vibrate(15);
     }, 500);
   }, {passive:true});
   tile.addEventListener('touchmove', (e)=>{
@@ -1220,10 +1253,6 @@ function applyTileOrder(){
     if(el) grid.appendChild(el);
   });
 }
-function toggleEditMode(){
-  const grid = document.getElementById('homeGrid');
-  setEditModeUI(!grid.classList.contains('edit-mode'));
-}
 function resetCustomization(){
   if(!confirm('Reset hidden apps, added apps, and tile order? Your contacts and notes are untouched.')) return;
   localStorage.removeItem('hub_hidden_tiles');
@@ -1232,51 +1261,84 @@ function resetCustomization(){
   location.reload();
 }
 
-/* ---------- appearance: size, columns, colors ---------- */
+/* ---------- appearance: size, columns, colors, theme, icons, behavior ---------- */
+const SIZE_MAP = ['compact','regular','large'];
 function applyPreferences(){
   const size = localStorage.getItem('hub_pref_size') || 'regular';
   const cols = localStorage.getItem('hub_pref_cols') || '2';
   const ink = localStorage.getItem('hub_pref_ink');
   const paper = localStorage.getItem('hub_pref_paper');
+  const theme = localStorage.getItem('hub_pref_theme') || 'paper';
   document.body.classList.remove('size-compact','size-large');
   if(size === 'compact') document.body.classList.add('size-compact');
   if(size === 'large') document.body.classList.add('size-large');
   document.body.classList.toggle('cols-3', cols === '3');
+  document.body.classList.toggle('theme-glass', theme === 'glass');
   if(ink) document.documentElement.style.setProperty('--ink', ink);
   if(paper) document.documentElement.style.setProperty('--paper', paper);
 }
 function setSizePref(v){ localStorage.setItem('hub_pref_size', v); applyPreferences(); syncAppearanceControls(); }
+function setSizePrefFromSlider(v){ setSizePref(SIZE_MAP[v-1]); }
 function setColsPref(v){ localStorage.setItem('hub_pref_cols', v); applyPreferences(); syncAppearanceControls(); }
 function setInkColor(v){ localStorage.setItem('hub_pref_ink', v); applyPreferences(); }
 function setPaperColor(v){ localStorage.setItem('hub_pref_paper', v); applyPreferences(); }
+function setThemePref(on){ localStorage.setItem('hub_pref_theme', on ? 'glass' : 'paper'); applyPreferences(); }
+function matchIconsOn(){ return localStorage.getItem('hub_pref_matchicons') === '1'; }
+function setMatchIconsPref(on){ localStorage.setItem('hub_pref_matchicons', on ? '1' : '0'); renderCustomTiles(); }
+function hapticsOn(){ return localStorage.getItem('hub_pref_haptics') !== '0'; }
+function setHapticsPref(on){ localStorage.setItem('hub_pref_haptics', on ? '1' : '0'); }
+function autoHomeOn(){ return localStorage.getItem('hub_pref_autohome') !== '0'; }
+function setAutoHomePref(on){ localStorage.setItem('hub_pref_autohome', on ? '1' : '0'); }
 function resetAppearance(){
   localStorage.removeItem('hub_pref_size');
   localStorage.removeItem('hub_pref_cols');
   localStorage.removeItem('hub_pref_ink');
   localStorage.removeItem('hub_pref_paper');
+  localStorage.removeItem('hub_pref_theme');
+  localStorage.removeItem('hub_pref_matchicons');
   document.documentElement.style.removeProperty('--ink');
   document.documentElement.style.removeProperty('--paper');
   applyPreferences();
   syncAppearanceControls();
+  renderCustomTiles();
   toast('Appearance reset');
 }
 function syncAppearanceControls(){
   const size = localStorage.getItem('hub_pref_size') || 'regular';
   const cols = localStorage.getItem('hub_pref_cols') || '2';
-  document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b.dataset.size===size));
+  const slider = document.getElementById('sizeSlider');
+  if(slider) slider.value = SIZE_MAP.indexOf(size) + 1;
   document.querySelectorAll('.cols-btn').forEach(b=>b.classList.toggle('active', b.dataset.cols===cols));
   const inkPicker = document.getElementById('inkColorPicker');
   const paperPicker = document.getElementById('paperColorPicker');
   if(inkPicker) inkPicker.value = localStorage.getItem('hub_pref_ink') || '#232323';
   if(paperPicker) paperPicker.value = localStorage.getItem('hub_pref_paper') || '#ece8dd';
+  const glassToggle = document.getElementById('glassToggle');
+  if(glassToggle) glassToggle.checked = (localStorage.getItem('hub_pref_theme') === 'glass');
+  const matchToggle = document.getElementById('matchIconsToggle');
+  if(matchToggle) matchToggle.checked = matchIconsOn();
+  const hapticsToggle = document.getElementById('hapticsToggle');
+  if(hapticsToggle) hapticsToggle.checked = hapticsOn();
+  const autoHomeToggle = document.getElementById('autoHomeToggle');
+  if(autoHomeToggle) autoHomeToggle.checked = autoHomeOn();
 }
-function copySuggestion(){
-  const box = document.getElementById('suggestBox');
-  const val = box.value.trim();
-  if(!val){ toast('Type something first'); return; }
-  navigator.clipboard.writeText(val)
-    .then(()=>toast('Copied — paste it to Claude next time you chat'))
-    .catch(()=>toast('Could not copy — select and copy manually'));
+async function ensureRealIcon(app){
+  if(app._fetchingIcon) return;
+  app._fetchingIcon = true;
+  try{
+    const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(app.name) + '&country=us&entity=software&limit=1');
+    const data = await res.json();
+    const hit = data.results && data.results[0];
+    if(hit && hit.artworkUrl60){
+      const list = getCustomApps();
+      const idx = list.findIndex(a=>a.name===app.name);
+      if(idx !== -1 && !list[idx].iconImg){
+        list[idx].iconImg = hit.artworkUrl60;
+        saveCustomApps(list);
+        renderCustomTiles();
+      }
+    }
+  }catch(e){ /* silent — keep the pencil icon */ }
 }
 
 /* ---------- phone dial pad ---------- */
