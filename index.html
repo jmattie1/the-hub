@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clean Slate">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Slate</title>
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Clean Slate</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
 <style>
   :root{
@@ -47,10 +49,29 @@
   .app-icon-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);
     display:flex;align-items:center;justify-content:center;font-size:16px;
     font-family:Menlo,monospace;background:var(--paper2);}
+  .app-icon-img{width:40px;height:40px;border-radius:12px;object-fit:cover;border:2px solid var(--ink);}
   .store-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:10px 0;border-bottom:1px dashed var(--line);}
   .store-item:last-child{border-bottom:none;}
   .store-item .store-name{font-size:16px;flex:1;}
+  .store-item .store-icon{width:36px;height:36px;border-radius:9px;object-fit:cover;border:1px solid var(--line);}
+  .toggle-row{display:flex;gap:8px;margin-bottom:14px;}
+  .toggle-row button{flex:1;padding:10px 4px;border:2px solid var(--ink);border-radius:12px;
+    background:var(--paper2);color:var(--ink);font-family:inherit;font-size:14px;cursor:pointer;}
+  .toggle-row button.active{background:var(--ink);color:var(--paper);}
+  .color-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;}
+  .color-row input[type=color]{width:56px;height:36px;border:2px solid var(--ink);border-radius:8px;padding:0;background:none;cursor:pointer;}
+  body.cols-3 .grid{grid-template-columns:1fr 1fr 1fr;}
+  body.size-compact .tile{padding:12px 6px 8px;gap:6px;}
+  body.size-compact .tile svg{width:28px;height:28px;}
+  body.size-compact .tile span{font-size:12px;}
+  body.size-compact .app-icon-circle{width:28px;height:28px;font-size:12px;}
+  body.size-compact .app-icon-img{width:28px;height:28px;}
+  body.size-large .tile{padding:26px 12px 20px;gap:12px;}
+  body.size-large .tile svg{width:52px;height:52px;}
+  body.size-large .tile span{font-size:18px;}
+  body.size-large .app-icon-circle{width:52px;height:52px;font-size:20px;}
+  body.size-large .app-icon-img{width:52px;height:52px;}
   section.card{border:2px solid var(--ink);border-radius:18px;padding:16px;margin-bottom:16px;background:var(--paper2);}
   section.card h2{margin:0 0 10px;font-size:18px;font-weight:400;border-bottom:1px solid var(--line);padding-bottom:8px;}
   .list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);}
@@ -277,16 +298,34 @@
       <h2>App Store</h2>
       <input type="text" id="storeSearch" placeholder="Search apps to add" oninput="renderAppStore()">
       <div id="storeList"></div>
-      <div class="caption">These launch each app the same way the rest of Slate does — its own link scheme with a website fallback. Apple doesn't officially document most of these, so a few may not open the app itself. Adding one puts it on your home screen right away. Manage hidden apps or message Claude from App Settings.</div>
+      <div class="caption">The list below is Clean Slate's favorites, with their own pencil icons and best-effort direct links. Type 2+ letters to search the real App Store catalog — those use the app's actual icon, but only open straight to the app if it's one of the favorites; anything else opens its App Store page instead. Manage hidden apps or message Claude from App Settings.</div>
     </section>
   </div>
 
   <!-- APP SETTINGS -->
   <div class="view" id="view-appsettings">
     <section class="card">
+      <h2>Appearance</h2>
+      <div class="flabel">Tile size</div>
+      <div class="toggle-row">
+        <button class="size-btn" data-size="compact" onclick="setSizePref('compact')">Compact</button>
+        <button class="size-btn" data-size="regular" onclick="setSizePref('regular')">Regular</button>
+        <button class="size-btn" data-size="large" onclick="setSizePref('large')">Large</button>
+      </div>
+      <div class="flabel">Columns</div>
+      <div class="toggle-row">
+        <button class="cols-btn" data-cols="2" onclick="setColsPref('2')">2 across</button>
+        <button class="cols-btn" data-cols="3" onclick="setColsPref('3')">3 across</button>
+      </div>
+      <div class="flabel">Colors</div>
+      <div class="color-row"><div class="store-name">Ink (lines &amp; text)</div><input type="color" id="inkColorPicker" oninput="setInkColor(this.value)"></div>
+      <div class="color-row"><div class="store-name">Paper (background)</div><input type="color" id="paperColorPicker" oninput="setPaperColor(this.value)"></div>
+      <button class="icon-btn" style="margin-top:8px;" onclick="resetAppearance()">Reset appearance</button>
+    </section>
+    <section class="card">
       <h2>Home screen</h2>
       <button class="btn secondary" onclick="toggleEditMode()" id="editModeBtn2">Edit tiles</button>
-      <div class="caption">Turns on the same Edit mode as the ✕ up top. While it's on, drag a tile to reorder it, or tap the ✕ to remove it.</div>
+      <div class="caption">You can also just press and hold any tile to start rearranging — no need to tap Edit first. This button just shows the ✕ delete badges without holding anything.</div>
     </section>
     <section class="card">
       <h2>Hidden / removed tiles</h2>
@@ -296,7 +335,7 @@
       <h2>Message Claude</h2>
       <textarea id="suggestBox" rows="3" placeholder="Note an idea or app you want added here, then copy it and paste it to Claude next time you're chatting."></textarea>
       <button class="btn secondary" onclick="copySuggestion()">Copy message</button>
-      <div class="caption">This is the closest honest version of an "always-on chat bot": Slate is a static page with no server, so it has no way to reach Claude or anyone else on its own. Write your note, copy it, then paste it into your chat with Claude — that's what actually gets the app updated.</div>
+      <div class="caption">This is the closest honest version of an "always-on chat bot": Clean Slate is a static page with no server, so it has no way to reach Claude or anyone else on its own. Write your note, copy it, then paste it into your chat with Claude — that's what actually gets the app updated.</div>
     </section>
     <section class="card">
       <h2>Reset</h2>
@@ -540,6 +579,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
+applyPreferences();
 function toast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -554,7 +594,7 @@ function openView(name){
   if(name === 'clock') { updateClock(); }
   if(name === 'phone') { dialRender(); }
   if(name === 'appstore') { renderAppStore(); }
-  if(name === 'appsettings') { renderHiddenList(); }
+  if(name === 'appsettings') { renderHiddenList(); syncAppearanceControls(); }
 }
 
 function openGame(name){
@@ -926,41 +966,41 @@ function openGoogle(){ launchApp('https://www.google.com/', null); }
 
 /* ---------- app store: search & add custom app tiles ---------- */
 const APP_CATALOG = [
-  {name:'Instagram', scheme:'instagram://', url:'https://instagram.com'},
-  {name:'X (Twitter)', scheme:'twitter://', url:'https://twitter.com'},
-  {name:'TikTok', scheme:'tiktok://', url:'https://www.tiktok.com'},
-  {name:'Snapchat', scheme:'snapchat://', url:'https://www.snapchat.com'},
-  {name:'Spotify', scheme:'spotify://', url:'https://open.spotify.com'},
-  {name:'YouTube', scheme:'youtube://', url:'https://www.youtube.com'},
-  {name:'Netflix', scheme:'nflx://', url:'https://www.netflix.com'},
-  {name:'Amazon', scheme:'com.amazon.mobile.shopping://', url:'https://www.amazon.com'},
-  {name:'Uber', scheme:'uber://', url:'https://www.uber.com'},
-  {name:'Lyft', scheme:'lyft://', url:'https://www.lyft.com'},
-  {name:'DoorDash', scheme:'doordash://', url:'https://www.doordash.com'},
-  {name:'Venmo', scheme:'venmo://', url:'https://venmo.com'},
-  {name:'PayPal', scheme:'paypal://', url:'https://www.paypal.com'},
-  {name:'Airbnb', scheme:'airbnb://', url:'https://www.airbnb.com'},
-  {name:'Reddit', scheme:'reddit://', url:'https://www.reddit.com'},
-  {name:'WhatsApp', scheme:'whatsapp://', url:'https://www.whatsapp.com'},
-  {name:'Pinterest', scheme:'pinterest://', url:'https://www.pinterest.com'},
-  {name:'LinkedIn', scheme:'linkedin://', url:'https://www.linkedin.com'},
-  {name:'Discord', scheme:'discord://', url:'https://discord.com'},
-  {name:'Waze', scheme:'waze://', url:'https://waze.com'},
-  {name:'Yelp', scheme:'yelp://', url:'https://www.yelp.com'},
-  {name:'Twitch', scheme:'twitch://', url:'https://www.twitch.tv'},
-  {name:'Zoom', scheme:'zoomus://', url:'https://zoom.us'},
-  {name:'Bambu Handy', scheme:'bambuhandy://', url:'https://bambulab.com/en/download'}
+  {name:'Instagram', scheme:'instagram://', url:'https://instagram.com', icon:'<rect x="10" y="10" width="28" height="28" rx="9" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="24" cy="24" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="32" cy="16" r="1.6" fill="var(--ink)"/>'},
+  {name:'X (Twitter)', scheme:'twitter://', url:'https://twitter.com', icon:'<line x1="12" y1="12" x2="36" y2="36" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/><line x1="36" y1="12" x2="12" y2="36" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>'},
+  {name:'TikTok', scheme:'tiktok://', url:'https://www.tiktok.com', icon:'<circle cx="18" cy="32" r="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="24" y1="32" x2="24" y2="10" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 10 C24 16 30 18 34 18" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linecap="round"/>'},
+  {name:'Snapchat', scheme:'snapchat://', url:'https://www.snapchat.com', icon:'<path d="M24 8 C17 8 14 14 14 20 C14 24 13 26 10 28 C10 30 13 31 16 31 C16 34 19 36 24 36 C29 36 32 34 32 31 C35 31 38 30 38 28 C35 26 34 24 34 20 C34 14 31 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'},
+  {name:'Spotify', scheme:'spotify://', url:'https://open.spotify.com', icon:'<circle cx="24" cy="24" r="16" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M15 20 C22 17 29 17 34 21" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><path d="M16 25 C22 22 28 22 32 25" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><path d="M17 30 C22 28 27 28 30 30" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>'},
+  {name:'YouTube', scheme:'youtube://', url:'https://www.youtube.com', icon:'<rect x="7" y="14" width="34" height="20" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M21 20 L30 24 L21 28 Z" fill="var(--ink)"/>'},
+  {name:'Netflix', scheme:'nflx://', url:'https://www.netflix.com', icon:'<path d="M14 8 V40 M34 8 V40 M14 8 L34 40" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'},
+  {name:'Amazon', scheme:'com.amazon.mobile.shopping://', url:'https://www.amazon.com', icon:'<path d="M12 18 L24 12 L36 18 L24 24 Z" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M12 18 V32 L24 38 L36 32 V18" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M16 36 C20 40 28 40 32 36" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>'},
+  {name:'Uber', scheme:'uber://', url:'https://www.uber.com', icon:'<rect x="8" y="20" width="32" height="12" rx="4" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M14 20 L18 12 H30 L34 20" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="16" cy="34" r="3" fill="none" stroke="var(--ink)" stroke-width="2"/><circle cx="32" cy="34" r="3" fill="none" stroke="var(--ink)" stroke-width="2"/>'},
+  {name:'Lyft', scheme:'lyft://', url:'https://www.lyft.com', icon:'<path d="M24 6 C15 6 9 12 9 20 C9 30 24 42 24 42 C24 42 39 30 39 20 C39 12 33 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><rect x="17" y="16" width="14" height="8" rx="3" fill="none" stroke="var(--ink)" stroke-width="1.8"/>'},
+  {name:'DoorDash', scheme:'doordash://', url:'https://www.doordash.com', icon:'<path d="M14 18 L16 10 H32 L34 18" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><rect x="10" y="18" width="28" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/>'},
+  {name:'Venmo', scheme:'venmo://', url:'https://venmo.com', icon:'<rect x="8" y="8" width="32" height="32" rx="8" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 15 V33 M28 19 C28 19 26 17 22 17 C19 17 17 18.5 17 21 C17 26 29 23 29 29 C29 31.5 26.5 33 23 33 C19 33 17 31 17 31" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"/>'},
+  {name:'PayPal', scheme:'paypal://', url:'https://www.paypal.com', icon:'<rect x="10" y="14" width="24" height="18" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M16 14 C16 14 30 10 38 16 C38 16 30 20 16 20" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linejoin="round"/>'},
+  {name:'Airbnb', scheme:'airbnb://', url:'https://www.airbnb.com', icon:'<path d="M24 8 L10 20 V40 H38 V20 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M19 40 V28 H29 V40" fill="none" stroke="var(--ink)" stroke-width="2"/>'},
+  {name:'Reddit', scheme:'reddit://', url:'https://www.reddit.com', icon:'<circle cx="24" cy="26" r="12" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="19" cy="25" r="1.8" fill="var(--ink)"/><circle cx="29" cy="25" r="1.8" fill="var(--ink)"/><path d="M18 30 C20 32 28 32 30 30" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"/><line x1="24" y1="14" x2="24" y2="8" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="7" r="1.6" fill="var(--ink)"/>'},
+  {name:'WhatsApp', scheme:'whatsapp://', url:'https://www.whatsapp.com', icon:'<path d="M24 8 C13 8 6 15 6 24 C6 29 8.5 33 12.5 35.5 L11 42 L18 38.3 C20 38.8 22 39 24 39 C35 39 42 32 42 24 C42 15 35 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M18 22 C18 22 17 24 19 27 C21 30 23 31 23 31 C23 31 25 30 25 28 C25 27 24 26 24 26 L22 21 C22 21 20 21 18 22 Z" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>'},
+  {name:'Pinterest', scheme:'pinterest://', url:'https://www.pinterest.com', icon:'<path d="M24 6 C15 6 9 12 9 20 C9 28 15 34 24 34 C33 34 39 28 39 20 C39 12 33 6 24 6 Z" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M24 16 C21 16 19 18.5 19 21.5 C19 23.5 20 25 21.5 25.5" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"/><line x1="24" y1="16" x2="20" y2="42" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>'},
+  {name:'LinkedIn', scheme:'linkedin://', url:'https://www.linkedin.com', icon:'<rect x="9" y="18" width="30" height="18" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M18 18 V13 C18 11.5 19 10.5 20.5 10.5 H27.5 C29 10.5 30 11.5 30 13 V18" fill="none" stroke="var(--ink)" stroke-width="2"/><line x1="9" y1="26" x2="39" y2="26" stroke="var(--ink)" stroke-width="1.8"/>'},
+  {name:'Discord', scheme:'discord://', url:'https://discord.com', icon:'<path d="M14 16 C14 16 18 13 24 13 C30 13 34 16 34 16 L36 30 C36 30 32 34 24 34 C16 34 12 30 12 30 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><circle cx="19" cy="24" r="1.8" fill="var(--ink)"/><circle cx="29" cy="24" r="1.8" fill="var(--ink)"/>'},
+  {name:'Waze', scheme:'waze://', url:'https://waze.com', icon:'<path d="M24 8 C33 8 39 15 39 22 C39 30 32 36 24 40 C16 36 9 30 9 22 C9 15 15 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/><path d="M24 16 V28 M18 22 L24 16 L30 22" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+  {name:'Yelp', scheme:'yelp://', url:'https://www.yelp.com', icon:'<path d="M24 8 L27 20 L39 20 L29 27 L33 39 L24 31 L15 39 L19 27 L9 20 L21 20 Z" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>'},
+  {name:'Twitch', scheme:'twitch://', url:'https://www.twitch.tv', icon:'<rect x="9" y="10" width="30" height="22" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M20 17 L29 21 L20 25 Z" fill="var(--ink)"/><line x1="18" y1="32" x2="18" y2="38" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><line x1="30" y1="32" x2="30" y2="38" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/>'},
+  {name:'Zoom', scheme:'zoomus://', url:'https://zoom.us', icon:'<rect x="7" y="16" width="24" height="16" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/><path d="M31 21 L41 16 V32 L31 27 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>'},
+  {name:'Bambu Handy', scheme:'bambuhandy://', url:'https://bambulab.com/en/download', icon:'<rect x="10" y="10" width="28" height="10" rx="2" fill="none" stroke="var(--ink)" stroke-width="2"/><line x1="24" y1="20" x2="24" y2="28" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/><rect x="14" y="28" width="20" height="10" rx="2" fill="none" stroke="var(--ink)" stroke-width="2"/>'}
 ];
 
 function getCustomApps(){ return JSON.parse(localStorage.getItem('hub_custom_apps') || '[]'); }
 function saveCustomApps(list){ localStorage.setItem('hub_custom_apps', JSON.stringify(list)); }
 function isAppAdded(name){ return getCustomApps().some(a=>a.name===name); }
 
-function addCustomApp(name){
-  const app = APP_CATALOG.find(a=>a.name===name);
+function addLiveApp(name){
+  const app = lastStoreResults[name] || APP_CATALOG.find(a=>a.name===name);
   if(!app) return;
   const list = getCustomApps();
-  if(list.some(a=>a.name===name)) return;
+  if(list.some(a=>a.name===app.name)) return;
   list.push(app);
   saveCustomApps(list);
   renderCustomTiles();
@@ -974,7 +1014,15 @@ function removeCustomApp(name){
 }
 function launchCustomApp(name){
   const app = getCustomApps().find(a=>a.name===name) || APP_CATALOG.find(a=>a.name===name);
-  if(app) launchApp(app.scheme, app.url);
+  if(!app) return;
+  if(app.scheme) launchApp(app.scheme, app.url);
+  else window.open(app.url, '_blank');
+}
+function tileIconHtml(app, size){
+  const s = size || 40;
+  if(app.icon) return `<svg viewBox="0 0 48 48">${app.icon}</svg>`;
+  if(app.iconImg) return `<img class="app-icon-img" src="${app.iconImg}" alt="">`;
+  return `<div class="app-icon-circle">${escapeHtml(app.name.charAt(0).toUpperCase())}</div>`;
 }
 function renderCustomTiles(){
   const grid = document.getElementById('homeGrid');
@@ -987,7 +1035,7 @@ function renderCustomTiles(){
     btn.className = 'tile custom-tile';
     btn.setAttribute('data-tile-id', id);
     btn.onclick = ()=>launchCustomApp(app.name);
-    btn.innerHTML = `<div class="app-icon-circle">${escapeHtml(app.name.charAt(0).toUpperCase())}</div><span>${escapeHtml(app.name)}</span>`;
+    btn.innerHTML = `${tileIconHtml(app)}<span>${escapeHtml(app.name)}</span>`;
     const del = document.createElement('span');
     del.className = 'tile-badge';
     del.textContent = '✕';
@@ -998,21 +1046,54 @@ function renderCustomTiles(){
   });
   applyTileOrder();
 }
+
+/* ---------- app store: live search against Apple's real App Store catalog ---------- */
+let lastStoreResults = {};
+let storeSearchTimer = null;
 function renderAppStore(){
   const box = document.getElementById('storeSearch');
-  const q = (box ? box.value : '').trim().toLowerCase();
+  const q = (box ? box.value : '').trim();
   const list = document.getElementById('storeList');
   if(!list) return;
-  const matches = APP_CATALOG.filter(a=>a.name.toLowerCase().includes(q));
-  list.innerHTML = matches.map(a=>{
+  clearTimeout(storeSearchTimer);
+  if(q.length < 2){
+    renderStoreList(APP_CATALOG.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())));
+    return;
+  }
+  list.innerHTML = '<div class="empty">Searching the App Store…</div>';
+  storeSearchTimer = setTimeout(()=>searchAppStore(q), 350);
+}
+async function searchAppStore(q){
+  try{
+    const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&country=us&entity=software&limit=25');
+    const data = await res.json();
+    const results = (data.results || []).map(r=>{
+      const known = APP_CATALOG.find(a=>a.name.toLowerCase() === (r.trackName||'').toLowerCase());
+      return known || { name: r.trackName, scheme: null, url: r.trackViewUrl, iconImg: r.artworkUrl60 };
+    });
+    renderStoreList(results);
+  }catch(err){
+    const list = document.getElementById('storeList');
+    if(list) list.innerHTML = '<div class="empty">Couldn\'t reach the App Store search — check your connection.</div>';
+  }
+}
+function renderStoreList(items){
+  lastStoreResults = {};
+  items.forEach(a=>{ lastStoreResults[a.name] = a; });
+  const list = document.getElementById('storeList');
+  if(!list) return;
+  if(!items.length){ list.innerHTML = '<div class="empty">No matches</div>'; return; }
+  list.innerHTML = items.map(a=>{
     const added = isAppAdded(a.name);
     const safeName = a.name.replace(/'/g, "\\'");
-    return `<div class="store-item"><div class="store-name">${escapeHtml(a.name)}</div>` +
-      (added
-        ? `<button class="icon-btn danger" onclick="removeCustomApp('${safeName}')">Remove</button>`
-        : `<button class="icon-btn" onclick="addCustomApp('${safeName}')">Add</button>`) +
-      `</div>`;
-  }).join('') || '<div class="empty">No matches</div>';
+    const iconHtml = a.icon
+      ? `<svg class="store-icon" viewBox="0 0 48 48">${a.icon}</svg>`
+      : (a.iconImg ? `<img class="store-icon" src="${a.iconImg}" alt="">` : `<div class="app-icon-circle" style="width:36px;height:36px;">${escapeHtml(a.name.charAt(0).toUpperCase())}</div>`);
+    const actionBtn = added
+      ? `<button class="icon-btn danger" onclick="removeCustomApp('${safeName}')">Remove</button>`
+      : `<button class="icon-btn" onclick="addLiveApp('${safeName}')">Add</button>`;
+    return `<div class="store-item">${iconHtml}<div class="store-name">${escapeHtml(a.name)}</div>${actionBtn}</div>`;
+  }).join('');
 }
 
 /* ---------- hide / delete / restore home screen tiles ---------- */
@@ -1071,22 +1152,43 @@ function initHomeTiles(){
   });
 }
 
-/* ---------- drag to reorder tiles (only while Edit mode is on) ---------- */
+/* ---------- long-press to reorder tiles (no need to tap Edit first) ---------- */
 let dragTile = null;
+let dragActivated = false;
+let longPressTimer = null;
+let touchStartX = 0, touchStartY = 0;
+function setEditModeUI(on){
+  document.getElementById('homeGrid').classList.toggle('edit-mode', on);
+  document.getElementById('editModeBtn').textContent = on ? 'Done' : 'Edit';
+  const btn2 = document.getElementById('editModeBtn2');
+  if(btn2) btn2.textContent = on ? 'Done editing' : 'Edit tiles';
+}
 function attachDragHandlers(tile){
   if(tile.dataset.dragBound) return;
   tile.dataset.dragBound = '1';
   tile.addEventListener('touchstart', (e)=>{
-    if(!document.getElementById('homeGrid').classList.contains('edit-mode')) return;
     if(e.target.closest('.tile-badge')) return;
-    dragTile = tile;
-    tile.classList.add('dragging');
+    const t = e.touches[0];
+    touchStartX = t.clientX; touchStartY = t.clientY;
+    dragActivated = false;
+    clearTimeout(longPressTimer);
+    longPressTimer = setTimeout(()=>{
+      dragActivated = true;
+      dragTile = tile;
+      setEditModeUI(true);
+      tile.classList.add('dragging');
+      if(navigator.vibrate) navigator.vibrate(15);
+    }, 500);
   }, {passive:true});
   tile.addEventListener('touchmove', (e)=>{
-    if(!dragTile) return;
+    const t = e.touches[0];
+    if(!dragActivated){
+      if(Math.abs(t.clientX-touchStartX) > 10 || Math.abs(t.clientY-touchStartY) > 10) clearTimeout(longPressTimer);
+      return;
+    }
+    if(dragTile !== tile) return;
     e.preventDefault();
-    const touch = e.touches[0];
-    const overEl = document.elementFromPoint(touch.clientX, touch.clientY);
+    const overEl = document.elementFromPoint(t.clientX, t.clientY);
     const overTile = overEl && overEl.closest('.tile');
     if(overTile && overTile !== dragTile && overTile.parentElement === dragTile.parentElement){
       const grid = dragTile.parentElement;
@@ -1095,10 +1197,13 @@ function attachDragHandlers(tile){
       else grid.insertBefore(dragTile, overTile);
     }
   }, {passive:false});
-  tile.addEventListener('touchend', ()=>{
-    if(!dragTile) return;
+  tile.addEventListener('touchend', (e)=>{
+    clearTimeout(longPressTimer);
+    if(!dragActivated || dragTile !== tile) return;
+    e.preventDefault();
     dragTile.classList.remove('dragging');
     dragTile = null;
+    dragActivated = false;
     saveTileOrder();
   });
 }
@@ -1117,10 +1222,7 @@ function applyTileOrder(){
 }
 function toggleEditMode(){
   const grid = document.getElementById('homeGrid');
-  const on = grid.classList.toggle('edit-mode');
-  document.getElementById('editModeBtn').textContent = on ? 'Done' : 'Edit';
-  const btn2 = document.getElementById('editModeBtn2');
-  if(btn2) btn2.textContent = on ? 'Done editing' : 'Edit tiles';
+  setEditModeUI(!grid.classList.contains('edit-mode'));
 }
 function resetCustomization(){
   if(!confirm('Reset hidden apps, added apps, and tile order? Your contacts and notes are untouched.')) return;
@@ -1128,6 +1230,45 @@ function resetCustomization(){
   localStorage.removeItem('hub_custom_apps');
   localStorage.removeItem('hub_tile_order');
   location.reload();
+}
+
+/* ---------- appearance: size, columns, colors ---------- */
+function applyPreferences(){
+  const size = localStorage.getItem('hub_pref_size') || 'regular';
+  const cols = localStorage.getItem('hub_pref_cols') || '2';
+  const ink = localStorage.getItem('hub_pref_ink');
+  const paper = localStorage.getItem('hub_pref_paper');
+  document.body.classList.remove('size-compact','size-large');
+  if(size === 'compact') document.body.classList.add('size-compact');
+  if(size === 'large') document.body.classList.add('size-large');
+  document.body.classList.toggle('cols-3', cols === '3');
+  if(ink) document.documentElement.style.setProperty('--ink', ink);
+  if(paper) document.documentElement.style.setProperty('--paper', paper);
+}
+function setSizePref(v){ localStorage.setItem('hub_pref_size', v); applyPreferences(); syncAppearanceControls(); }
+function setColsPref(v){ localStorage.setItem('hub_pref_cols', v); applyPreferences(); syncAppearanceControls(); }
+function setInkColor(v){ localStorage.setItem('hub_pref_ink', v); applyPreferences(); }
+function setPaperColor(v){ localStorage.setItem('hub_pref_paper', v); applyPreferences(); }
+function resetAppearance(){
+  localStorage.removeItem('hub_pref_size');
+  localStorage.removeItem('hub_pref_cols');
+  localStorage.removeItem('hub_pref_ink');
+  localStorage.removeItem('hub_pref_paper');
+  document.documentElement.style.removeProperty('--ink');
+  document.documentElement.style.removeProperty('--paper');
+  applyPreferences();
+  syncAppearanceControls();
+  toast('Appearance reset');
+}
+function syncAppearanceControls(){
+  const size = localStorage.getItem('hub_pref_size') || 'regular';
+  const cols = localStorage.getItem('hub_pref_cols') || '2';
+  document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b.dataset.size===size));
+  document.querySelectorAll('.cols-btn').forEach(b=>b.classList.toggle('active', b.dataset.cols===cols));
+  const inkPicker = document.getElementById('inkColorPicker');
+  const paperPicker = document.getElementById('paperColorPicker');
+  if(inkPicker) inkPicker.value = localStorage.getItem('hub_pref_ink') || '#232323';
+  if(paperPicker) paperPicker.value = localStorage.getItem('hub_pref_paper') || '#ece8dd';
 }
 function copySuggestion(){
   const box = document.getElementById('suggestBox');
