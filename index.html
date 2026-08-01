@@ -47,14 +47,17 @@
   .app-icon-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);
     display:flex;align-items:center;justify-content:center;font-size:16px;
     font-family:Menlo,monospace;background:var(--paper2);}
-  .app-icon-img{width:40px;height:40px;border-radius:12px;object-fit:cover;border:2px solid var(--ink);
-    background:var(--paper2);padding:3px;box-sizing:border-box;}
+  /* real fetched app icons come full-bleed already (that's how Apple exports
+     them), so no extra border/background frame is added here — that frame was
+     making added apps look like a different, heavier "size" than Slate's
+     free-floating hand-drawn icons right next to them. Plain size+radius
+     constraints keep every icon, hand-drawn or real, the same footprint. */
+  .app-icon-img{width:40px;height:40px;border-radius:22%;object-fit:cover;}
   .store-item{display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:10px 0;border-bottom:1px dashed var(--line);}
   .store-item:last-child{border-bottom:none;}
   .store-item .store-name{font-size:16px;flex:1;}
-  .store-item .store-icon{width:36px;height:36px;border-radius:9px;object-fit:cover;border:1px solid var(--line);
-    background:var(--paper2);padding:2px;box-sizing:border-box;}
+  .store-item .store-icon{width:36px;height:36px;border-radius:22%;object-fit:cover;}
   .toggle-row{display:flex;gap:8px;margin-bottom:14px;}
   .toggle-row button{flex:1;padding:10px 4px;border:2px solid var(--ink);border-radius:12px;
     background:var(--paper2);color:var(--ink);font-family:inherit;font-size:14px;cursor:pointer;}
@@ -88,6 +91,27 @@
   body.size-large .tile span{font-size:18px;}
   body.size-large .app-icon-circle{width:52px;height:52px;font-size:20px;}
   body.size-large .app-icon-img{width:52px;height:52px;}
+  body.hide-names .tile span{display:none;}
+  .pulldown-select{width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:12px;
+    padding:10px;font-size:15px;font-family:inherit;color:var(--ink);margin-bottom:14px;}
+
+  /* ---------- iOS Home Screen mode: borderless squircle icons, paged & swipeable ---------- */
+  body.ios-mode .tile{background:none;border:none;padding:4px 0 0;}
+  body.ios-mode .tile:active{background:none;}
+  body.ios-mode .tile svg{background:var(--paper2);border:2px solid var(--ink);border-radius:22%;
+    padding:9px;box-sizing:border-box;}
+  body.ios-mode .app-icon-circle{border-radius:22%;}
+  body.ios-mode .tile span{font-size:12px;margin-top:2px;}
+  body.ios-mode .tile-badge{top:-4px;right:2px;}
+  .grid.paged{display:block;}
+  .home-pager{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;}
+  .home-pager::-webkit-scrollbar{display:none;}
+  .home-page{flex:0 0 100%;display:grid;grid-template-columns:repeat(var(--ios-cols,4),1fr);
+    grid-auto-rows:min-content;gap:20px 8px;scroll-snap-align:start;align-content:start;padding:4px 2px 10px;}
+  .page-dots{display:flex;justify-content:center;gap:6px;margin-top:6px;}
+  .page-dots .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);opacity:.4;}
+  .page-dots .dot.active{opacity:1;background:var(--ink);}
   section.card{border:2px solid var(--ink);border-radius:18px;padding:16px;margin-bottom:16px;background:var(--paper2);}
   section.card h2{margin:0 0 10px;font-size:18px;font-weight:400;border-bottom:1px solid var(--line);padding-bottom:8px;}
   .list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);}
@@ -267,29 +291,6 @@
         <svg viewBox="0 0 48 48"><circle cx="15" cy="34" r="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="35" cy="30" r="5" fill="none" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="34" x2="20" y2="12" stroke="var(--ink)" stroke-width="2.2"/><line x1="40" y1="30" x2="40" y2="8" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="12" x2="40" y2="8" stroke="var(--ink)" stroke-width="2.2"/><line x1="20" y1="18" x2="40" y2="14" stroke="var(--ink)" stroke-width="2.2"/></svg>
         <span>Music</span>
       </button>
-      <button class="tile" onclick="openClaude()">
-        <svg viewBox="0 0 48 48">
-          <g stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round">
-            <line x1="24" y1="24" x2="24" y2="6"/>
-            <line x1="24" y1="24" x2="24" y2="42"/>
-            <line x1="24" y1="24" x2="42" y2="24"/>
-            <line x1="24" y1="24" x2="6" y2="24"/>
-            <line x1="24" y1="24" x2="36.7" y2="11.3"/>
-            <line x1="24" y1="24" x2="11.3" y2="36.7"/>
-            <line x1="24" y1="24" x2="36.7" y2="36.7"/>
-            <line x1="24" y1="24" x2="11.3" y2="11.3"/>
-            <line x1="24" y1="24" x2="31" y2="8.5"/>
-            <line x1="24" y1="24" x2="17" y2="39.5"/>
-            <line x1="24" y1="24" x2="39.5" y2="31"/>
-            <line x1="24" y1="24" x2="8.5" y2="17"/>
-            <line x1="24" y1="24" x2="17" y2="8.5"/>
-            <line x1="24" y1="24" x2="31" y2="39.5"/>
-            <line x1="24" y1="24" x2="39.5" y2="17"/>
-            <line x1="24" y1="24" x2="8.5" y2="31"/>
-          </g>
-        </svg>
-        <span>Claude</span>
-      </button>
       <button class="tile" onclick="openTesla()">
         <svg viewBox="0 0 48 48"><path d="M24 8 C15 8 8 10 6 13 C10 13 18 13 22 13 L22 40 L26 40 L26 13 C30 13 38 13 42 13 C40 10 33 8 24 8 Z" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/></svg>
         <span>Tesla</span>
@@ -313,7 +314,7 @@
       <h2>App Store</h2>
       <input type="text" id="storeSearch" placeholder="Search apps to add" oninput="renderAppStore()">
       <div id="storeList"></div>
-      <div class="caption">The list below is Clean Slate's favorites, with their own pencil icons and best-effort direct links. Type 2+ letters to search the real App Store catalog — those use the app's actual icon, but only open straight to the app if it's one of the favorites; anything else opens its App Store page instead. Manage hidden apps or message Claude from App Settings.</div>
+      <div class="caption">The list below is Clean Slate's favorites, with their own pencil icons and best-effort direct links. Type 2+ letters to search the real App Store catalog — those use the app's actual icon, but only open straight to the app if it's one of the favorites; anything else opens the native App Store app to that listing instead. Manage hidden apps from App Settings.</div>
     </section>
   </div>
 
@@ -335,12 +336,23 @@
       <div class="caption">A translucent, frosted look for tiles and cards instead of flat paper.</div>
       <div class="switch-row"><div class="store-name">Match app icons</div><label class="switch"><input type="checkbox" id="matchIconsToggle" onchange="setMatchIconsPref(this.checked)"><span class="tswitch"></span></label></div>
       <div class="caption">When on, apps you've added show their real icon instead of Clean Slate's pencil version.</div>
+      <div class="switch-row"><div class="store-name">Show app names</div><label class="switch"><input type="checkbox" id="showNamesToggle" onchange="setShowNamesPref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="caption">Turn off to show icons only, with no label — like a normal phone home screen.</div>
+      <div class="switch-row"><div class="store-name">iOS Home Screen</div><label class="switch"><input type="checkbox" id="iosModeToggle" onchange="setIosModePref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="caption">Square icons with no card border, laid out in swipeable pages with dots — like a real iPhone home screen — instead of one scrolling list.</div>
       <button class="icon-btn" style="margin-top:8px;" onclick="resetAppearance()">Reset appearance</button>
     </section>
     <section class="card">
       <h2>Behavior</h2>
       <div class="switch-row"><div class="store-name">Haptic feedback</div><label class="switch"><input type="checkbox" id="hapticsToggle" onchange="setHapticsPref(this.checked)"><span class="tswitch"></span></label></div>
       <div class="switch-row"><div class="store-name">Snap back to Home after opening an app</div><label class="switch"><input type="checkbox" id="autoHomeToggle" onchange="setAutoHomePref(this.checked)"><span class="tswitch"></span></label></div>
+      <div class="flabel">Pulling down from the top of Home does</div>
+      <select id="pulldownSelect" class="pulldown-select" onchange="setPulldownPref(this.value)">
+        <option value="search">Open Search / App Store</option>
+        <option value="notes">Open Notes</option>
+        <option value="camera">Open Camera</option>
+        <option value="nothing">Nothing</option>
+      </select>
       <div class="caption">Press and hold any tile to rearrange it. Tap anywhere outside the tiles to finish.</div>
     </section>
     <section class="card">
@@ -633,7 +645,14 @@ document.addEventListener('touchend', e=>{
   const dx = e.changedTouches[0].clientX - swipeStartX;
   const dy = e.changedTouches[0].clientY - swipeStartY;
   swipeStartX = null;
-  if(dx > 70 && Math.abs(dy) < 60) swipeBack();
+  if(dx > 70 && Math.abs(dy) < 60){ swipeBack(); return; }
+  /* pull down from the very top of Home (not mid-page, not while dragging a
+     tile) to trigger whatever the "Pull down from the top" setting says */
+  const activeView = document.querySelector('.view.active');
+  if(!dragActivated && activeView && activeView.id === 'view-home' &&
+     dy > 90 && Math.abs(dx) < 70 && window.scrollY <= 2){
+    runPulldownAction();
+  }
 });
 function swipeBack(){
   const activeView = document.querySelector('.view.active');
@@ -974,7 +993,6 @@ function openMusic(){ launchApp('music://', 'https://music.apple.com/'); }
    land on a new text. */
 function openMessagesApp(){ launchApp('messages://', null); }
 function openNotesApp(){ launchApp('mobilenotes://', null); }
-function openClaude(){ launchApp('claude://', 'https://claude.ai/'); }
 function openTesla(){ launchApp('tesla://', 'https://www.tesla.com/'); }
 function openGoogle(){ launchApp('https://www.google.com/', null); }
 
@@ -1053,6 +1071,7 @@ function tileIconHtml(app){
 }
 function renderCustomTiles(){
   const grid = document.getElementById('homeGrid');
+  flattenHomeGrid();
   grid.querySelectorAll('.tile.custom-tile').forEach(t=>t.remove());
   const hiddenIds = getHiddenTiles().map(h=>h.id);
   getCustomApps().forEach(app=>{
@@ -1072,6 +1091,7 @@ function renderCustomTiles(){
     attachDragHandlers(btn);
   });
   applyTileOrder();
+  paginateHomeGrid();
 }
 
 /* ---------- app store: live search against Apple's real App Store catalog ---------- */
@@ -1141,6 +1161,7 @@ function hideTile(id, label, isCustom){
   const tile = document.querySelector(`#homeGrid [data-tile-id="${CSS.escape(id)}"]`);
   if(tile) tile.style.display = 'none';
   renderHiddenList();
+  paginateHomeGrid();
   toast(label + ' removed — restore it from App Settings');
 }
 function restoreTile(id){
@@ -1148,6 +1169,7 @@ function restoreTile(id){
   const tile = document.querySelector(`#homeGrid [data-tile-id="${CSS.escape(id)}"]`);
   if(tile) tile.style.display = '';
   renderHiddenList();
+  paginateHomeGrid();
 }
 function renderHiddenList(){
   const el = document.getElementById('hiddenList');
@@ -1242,7 +1264,10 @@ function attachDragHandlers(tile){
 }
 function saveTileOrder(){
   const grid = document.getElementById('homeGrid');
-  const order = [...grid.children].map(t=>t.getAttribute('data-tile-id')).filter(Boolean);
+  /* querySelectorAll walks every tile in document order regardless of whether
+     it's a direct child (flat layout) or nested inside a paged .home-page
+     (iOS mode), so drag-reordering keeps working the same either way. */
+  const order = [...grid.querySelectorAll('.tile')].map(t=>t.getAttribute('data-tile-id')).filter(Boolean);
   localStorage.setItem('hub_tile_order', JSON.stringify(order));
 }
 function applyTileOrder(){
@@ -1274,6 +1299,8 @@ function applyPreferences(){
   if(size === 'large') document.body.classList.add('size-large');
   document.body.classList.toggle('cols-3', cols === '3');
   document.body.classList.toggle('theme-glass', theme === 'glass');
+  document.body.classList.toggle('hide-names', !showNamesOn());
+  document.body.classList.toggle('ios-mode', iosModeOn());
   if(ink) document.documentElement.style.setProperty('--ink', ink);
   if(paper) document.documentElement.style.setProperty('--paper', paper);
 }
@@ -1289,6 +1316,78 @@ function hapticsOn(){ return localStorage.getItem('hub_pref_haptics') !== '0'; }
 function setHapticsPref(on){ localStorage.setItem('hub_pref_haptics', on ? '1' : '0'); }
 function autoHomeOn(){ return localStorage.getItem('hub_pref_autohome') !== '0'; }
 function setAutoHomePref(on){ localStorage.setItem('hub_pref_autohome', on ? '1' : '0'); }
+function showNamesOn(){ return localStorage.getItem('hub_pref_shownames') !== '0'; }
+function setShowNamesPref(on){ localStorage.setItem('hub_pref_shownames', on ? '1' : '0'); applyPreferences(); }
+function iosModeOn(){ return localStorage.getItem('hub_pref_iosmode') === '1'; }
+function setIosModePref(on){
+  localStorage.setItem('hub_pref_iosmode', on ? '1' : '0');
+  applyPreferences();
+  paginateHomeGrid();
+}
+function pulldownAction(){ return localStorage.getItem('hub_pref_pulldown') || 'search'; }
+function setPulldownPref(v){ localStorage.setItem('hub_pref_pulldown', v); }
+function runPulldownAction(){
+  const action = pulldownAction();
+  if(action === 'nothing') return;
+  if(action === 'search'){
+    openView('appstore');
+    setTimeout(()=>{ const el = document.getElementById('storeSearch'); if(el) el.focus(); }, 50);
+    return;
+  }
+  if(action === 'notes'){ openNotesApp(); return; }
+  if(action === 'camera'){ const label = document.querySelector('label[for="cameraInput"]'); if(label) label.click(); return; }
+}
+/* ---------- iOS mode: fold the flat tile list into swipeable, dot-indicated pages ---------- */
+const IOS_PAGE_ROWS = 5, IOS_PAGE_COLS = 4;
+function flattenHomeGrid(){
+  const grid = document.getElementById('homeGrid');
+  if(!grid) return;
+  const pager = grid.querySelector('.home-pager');
+  if(!pager) { grid.classList.remove('paged'); return; }
+  const tiles = [...grid.querySelectorAll('.tile')];
+  tiles.forEach(t=>grid.appendChild(t));
+  pager.remove();
+  const dots = document.getElementById('pageDots');
+  if(dots) dots.remove();
+  grid.classList.remove('paged');
+}
+function paginateHomeGrid(){
+  const grid = document.getElementById('homeGrid');
+  if(!grid) return;
+  flattenHomeGrid();
+  if(!iosModeOn()) return;
+  const tiles = [...grid.querySelectorAll('.tile')].filter(t=>t.style.display !== 'none');
+  if(!tiles.length) return;
+  grid.classList.add('paged');
+  grid.style.setProperty('--ios-cols', IOS_PAGE_COLS);
+  const perPage = IOS_PAGE_COLS * IOS_PAGE_ROWS;
+  const pager = document.createElement('div');
+  pager.className = 'home-pager';
+  for(let i=0; i<tiles.length; i+=perPage){
+    const page = document.createElement('div');
+    page.className = 'home-page';
+    tiles.slice(i, i+perPage).forEach(t=>page.appendChild(t));
+    pager.appendChild(page);
+  }
+  grid.appendChild(pager);
+  renderPageDots(pager);
+}
+function renderPageDots(pager){
+  const pages = [...pager.querySelectorAll('.home-page')];
+  let dots = document.getElementById('pageDots');
+  if(pages.length < 2){ if(dots) dots.remove(); return; }
+  if(!dots){
+    dots = document.createElement('div');
+    dots.id = 'pageDots';
+    dots.className = 'page-dots';
+  }
+  pager.insertAdjacentElement('afterend', dots);
+  dots.innerHTML = pages.map((_, i)=>`<span class="dot${i===0?' active':''}"></span>`).join('');
+  pager.onscroll = ()=>{
+    const idx = Math.round(pager.scrollLeft / pager.clientWidth);
+    dots.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active', i===idx));
+  };
+}
 function resetAppearance(){
   localStorage.removeItem('hub_pref_size');
   localStorage.removeItem('hub_pref_cols');
@@ -1296,11 +1395,14 @@ function resetAppearance(){
   localStorage.removeItem('hub_pref_paper');
   localStorage.removeItem('hub_pref_theme');
   localStorage.removeItem('hub_pref_matchicons');
+  localStorage.removeItem('hub_pref_shownames');
+  localStorage.removeItem('hub_pref_iosmode');
   document.documentElement.style.removeProperty('--ink');
   document.documentElement.style.removeProperty('--paper');
   applyPreferences();
   syncAppearanceControls();
   renderCustomTiles();
+  paginateHomeGrid();
   toast('Appearance reset');
 }
 function syncAppearanceControls(){
@@ -1321,6 +1423,12 @@ function syncAppearanceControls(){
   if(hapticsToggle) hapticsToggle.checked = hapticsOn();
   const autoHomeToggle = document.getElementById('autoHomeToggle');
   if(autoHomeToggle) autoHomeToggle.checked = autoHomeOn();
+  const showNamesToggle = document.getElementById('showNamesToggle');
+  if(showNamesToggle) showNamesToggle.checked = showNamesOn();
+  const iosModeToggle = document.getElementById('iosModeToggle');
+  if(iosModeToggle) iosModeToggle.checked = iosModeOn();
+  const pulldownSelect = document.getElementById('pulldownSelect');
+  if(pulldownSelect) pulldownSelect.value = pulldownAction();
 }
 async function ensureRealIcon(app){
   if(app._fetchingIcon) return;
