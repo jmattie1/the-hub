@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Boundary Kid">
+<meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Boundary — Kid</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
+<style>
+  :root{
+    --paper:#ece8dd; --paper2:#e2ddce; --ink:#232323; --ink-soft:#6b6659;
+    --line:#c9c3b2; --accent:#3b6e5c; --accent-soft:#dfe9e3; --danger:#8a3b2e;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Architects Daughter', cursive;
+    -webkit-font-smoothing:antialiased;padding-bottom:30px;}
+  header{height:env(safe-area-inset-top, 0px);background:var(--paper);}
+  main{max-width:460px;margin:0 auto;padding:20px;}
+  .brand{display:flex;align-items:baseline;gap:8px;margin-bottom:18px;}
+  .brand .name{font-size:26px;}
+  .brand .badge{background:var(--accent);color:var(--paper);font-size:12px;padding:3px 10px;border-radius:20px;}
+  .proto-banner{background:var(--accent-soft);border:2px dashed var(--accent);border-radius:14px;
+    padding:12px 14px;font-size:13px;color:var(--ink);margin-bottom:18px;line-height:1.5;}
+  section.card{border:2px solid var(--ink);border-radius:18px;padding:18px;margin-bottom:16px;background:var(--paper2);}
+  section.card h2{margin:0 0 6px;font-size:19px;font-weight:400;}
+  .caption{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-top:6px;}
+  .code-display{font-family:Menlo,monospace;font-size:44px;letter-spacing:8px;text-align:center;
+    background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:20px 10px;margin:10px 0;color:var(--accent);}
+  .btn{width:100%;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--ink);
+    color:var(--paper);font-size:16px;font-family:inherit;cursor:pointer;}
+  .btn.secondary{background:var(--paper2);color:var(--ink);}
+  .btn.accent{background:var(--accent);border-color:var(--accent);color:var(--paper);}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .label{font-size:15px;}
+  .stat-row .value{font-family:Menlo,monospace;font-size:16px;color:var(--accent);}
+  .bar-track{height:12px;background:var(--paper);border-radius:8px;overflow:hidden;margin-top:10px;border:1px solid var(--line);}
+  .bar-fill{height:100%;background:var(--accent);border-radius:8px;}
+  .app-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);}
+  .app-row:last-child{border-bottom:none;}
+  .app-row .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+  .app-row .name{flex:1;font-size:15px;}
+  .app-row .time{font-family:Menlo,monospace;font-size:13px;color:var(--ink-soft);}
+  .footer-link{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<header></header>
+<main>
+  <div class="brand"><span class="name">Boundary</span><span class="badge">Kid</span></div>
+
+  <div class="proto-banner">This is a design prototype, not a live connection. The code below doesn't actually sync to a parent's phone yet — a plain web page can't reach across two different devices without a real server behind it. See the Parent app for what real setup would take.</div>
+
+  <section class="card">
+    <h2>Your pairing code</h2>
+    <div class="code-display" id="pairCode">••••••</div>
+    <button class="btn secondary" onclick="newCode()">Get a new code</button>
+    <div class="caption">Show this number to your parent so they can pair with your device in the Boundary Parent app.</div>
+  </section>
+
+  <section class="card">
+    <h2>Today (example)</h2>
+    <div class="stat-row"><div class="label">Screen time</div><div class="value" id="screenTime">2h 14m</div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:46%"></div></div>
+    <div class="stat-row" style="margin-top:14px;"><div class="label">Downtime starts</div><div class="value">9:00 PM</div></div>
+    <div class="caption">Sample numbers, just to show what you'd see here. Nothing on your phone is actually being tracked or limited by this page.</div>
+  </section>
+
+  <section class="card">
+    <h2>Today's apps (example)</h2>
+    <div class="app-row"><span class="dot"></span><span class="name">Messages</span><span class="time">48m</span></div>
+    <div class="app-row"><span class="dot"></span><span class="name">Games</span><span class="time">41m</span></div>
+    <div class="app-row"><span class="dot"></span><span class="name">YouTube</span><span class="time">33m</span></div>
+    <div class="app-row"><span class="dot"></span><span class="name">Camera</span><span class="time">12m</span></div>
+  </section>
+
+  <a class="footer-link" href="./">← Back to Clean Slate</a>
+</main>
+<script>
+function randomCode(){
+  return String(Math.floor(100000 + Math.random()*900000));
+}
+function newCode(){
+  const code = randomCode();
+  localStorage.setItem('boundary_kid_code', code);
+  render();
+}
+function render(){
+  let code = localStorage.getItem('boundary_kid_code');
+  if(!code){ code = randomCode(); localStorage.setItem('boundary_kid_code', code); }
+  document.getElementById('pairCode').textContent = code;
+}
+render();
+</script>
+</body>
+</html>

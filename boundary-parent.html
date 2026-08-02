@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Boundary Parent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Boundary — Parent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap">
+<style>
+  :root{
+    --paper:#ece8dd; --paper2:#e2ddce; --ink:#232323; --ink-soft:#6b6659;
+    --line:#c9c3b2; --accent:#3b6e5c; --accent-soft:#dfe9e3; --danger:#8a3b2e;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Architects Daughter', cursive;
+    -webkit-font-smoothing:antialiased;padding-bottom:30px;}
+  header{height:env(safe-area-inset-top, 0px);background:var(--paper);}
+  main{max-width:460px;margin:0 auto;padding:20px;}
+  .brand{display:flex;align-items:baseline;gap:8px;margin-bottom:18px;}
+  .brand .name{font-size:26px;}
+  .brand .badge{background:var(--accent);color:var(--paper);font-size:12px;padding:3px 10px;border-radius:20px;}
+  .proto-banner{background:var(--accent-soft);border:2px dashed var(--accent);border-radius:14px;
+    padding:12px 14px;font-size:13px;color:var(--ink);margin-bottom:18px;line-height:1.5;}
+  section.card{border:2px solid var(--ink);border-radius:18px;padding:18px;margin-bottom:16px;background:var(--paper2);}
+  section.card h2{margin:0 0 6px;font-size:19px;font-weight:400;}
+  .caption{font-size:13px;color:var(--ink-soft);line-height:1.5;margin-top:6px;}
+  input[type=text], input[type=time]{
+    width:100%;background:var(--paper);border:2px solid var(--ink);border-radius:12px;
+    padding:10px;font-size:16px;font-family:inherit;color:var(--ink);margin-bottom:10px;
+  }
+  input.code-input{font-family:Menlo,monospace;letter-spacing:6px;text-align:center;font-size:22px;}
+  .btn{width:100%;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--ink);
+    color:var(--paper);font-size:16px;font-family:inherit;cursor:pointer;}
+  .btn.secondary{background:var(--paper2);color:var(--ink);}
+  .btn.accent{background:var(--accent);border-color:var(--accent);color:var(--paper);}
+  .btn.danger{background:none;border-color:var(--danger);color:var(--danger);}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line);}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .label{font-size:15px;}
+  .stat-row .value{font-family:Menlo,monospace;font-size:16px;color:var(--accent);}
+  .bar-track{height:12px;background:var(--paper);border-radius:8px;overflow:hidden;margin-top:10px;border:1px solid var(--line);}
+  .bar-fill{height:100%;background:var(--accent);border-radius:8px;}
+  .switch-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);}
+  .switch-row:last-child{border-bottom:none;}
+  .switch-row .name{font-size:15px;}
+  .switch{position:relative;display:inline-block;width:50px;height:28px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .tswitch{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+    background:var(--paper);border:2px solid var(--ink);border-radius:16px;transition:.2s;}
+  .switch .tswitch:before{position:absolute;content:"";height:16px;width:16px;left:3px;top:3px;
+    background:var(--ink);border-radius:50%;transition:.2s;}
+  .switch input:checked + .tswitch{background:var(--accent);border-color:var(--accent);}
+  .switch input:checked + .tswitch:before{background:var(--paper);transform:translateX(20px);}
+  .time-row{display:flex;gap:10px;align-items:center;}
+  .time-row .flabel{font-size:12px;color:var(--ink-soft);text-transform:uppercase;margin-bottom:4px;}
+  .check-row{display:flex;align-items:center;gap:10px;padding:8px 0;}
+  .check-row input{width:20px;height:20px;accent-color:var(--accent);}
+  .check-row label{font-size:15px;}
+  .explain p{font-size:14px;line-height:1.6;margin:0 0 12px;}
+  .explain ol{margin:0 0 12px;padding-left:20px;font-size:14px;line-height:1.7;}
+  .footer-link{display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--ink-soft);}
+  #dashboard{display:none;}
+</style>
+</head>
+<body>
+<header></header>
+<main>
+  <div class="brand"><span class="name">Boundary</span><span class="badge">Parent</span></div>
+
+  <div class="proto-banner">This is a design prototype for a parental-control concept — not a shipped product. Pairing here is a working UI, but it doesn't actually reach your child's phone: a web page can't install a background monitor or restrict another app on iOS. The "What this can't do yet" card below explains what real enforcement takes, and how to turn it on today for free with Apple's own tools.</div>
+
+  <section class="card" id="pairCard">
+    <h2>Pair a device</h2>
+    <input type="text" class="code-input" id="pairInput" maxlength="6" placeholder="000000">
+    <button class="btn accent" onclick="pairDevice()">Connect</button>
+    <div class="caption">Enter the 6-digit code shown in the Boundary Kid app on your child's phone.</div>
+  </section>
+
+  <div id="dashboard">
+    <section class="card">
+      <div class="stat-row" style="border-bottom:none;padding-top:0;">
+        <div class="label">Connected to</div>
+        <button class="btn danger" style="width:auto;padding:6px 12px;font-size:13px;" onclick="unpair()">Unpair</button>
+      </div>
+      <input type="text" id="childName" placeholder="Child's name" oninput="saveChildName(this.value)">
+    </section>
+
+    <section class="card">
+      <h2>Screen time today (example)</h2>
+      <div class="stat-row"><div class="label">Total</div><div class="value">2h 14m</div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:46%"></div></div>
+      <div class="caption">Sample data, to show what a real dashboard would surface once a device is actually connected.</div>
+    </section>
+
+    <section class="card">
+      <h2>App controls</h2>
+      <div class="switch-row"><span class="name">Instagram</span><label class="switch"><input type="checkbox" data-app="Instagram" onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><span class="name">TikTok</span><label class="switch"><input type="checkbox" data-app="TikTok" onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><span class="name">YouTube</span><label class="switch"><input type="checkbox" data-app="YouTube" checked onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><span class="name">Games</span><label class="switch"><input type="checkbox" data-app="Games" checked onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><span class="name">Messages</span><label class="switch"><input type="checkbox" data-app="Messages" checked onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="switch-row"><span class="name">Safari</span><label class="switch"><input type="checkbox" data-app="Safari" onchange="saveAppToggle(this)"><span class="tswitch"></span></label></div>
+      <div class="caption">On = allowed. These switches save here in the Parent app only — they don't block anything on the child's phone yet.</div>
+    </section>
+
+    <section class="card">
+      <h2>Downtime</h2>
+      <div class="time-row">
+        <div style="flex:1;"><div class="flabel">Starts</div><input type="time" id="downtimeStart" value="21:00" onchange="saveDowntime()"></div>
+        <div style="flex:1;"><div class="flabel">Ends</div><input type="time" id="downtimeEnd" value="07:00" onchange="saveDowntime()"></div>
+      </div>
+      <div class="caption">Only apps you've allowed above (like Messages) would stay reachable during downtime.</div>
+    </section>
+
+    <section class="card">
+      <h2>Content restrictions</h2>
+      <div class="check-row"><input type="checkbox" id="restExplicit" checked onchange="saveRestrictions()"><label for="restExplicit">Block explicit content</label></div>
+      <div class="check-row"><input type="checkbox" id="restPurchases" checked onchange="saveRestrictions()"><label for="restPurchases">Block in-app purchases</label></div>
+      <div class="check-row"><input type="checkbox" id="restWeb" onchange="saveRestrictions()"><label for="restWeb">Limit web browsing to allowed sites</label></div>
+    </section>
+  </div>
+
+  <section class="card explain">
+    <h2>What this can't do yet — and what actually works today</h2>
+    <p>Everything above is a real, working interface — but it's only talking to this one browser's local storage. A static web page has no way to reach across the internet to a second device, install anything in the background, or restrict apps it doesn't own; iOS deliberately sandboxes every app (including Safari) so it can't touch others. Turning this into something that really controls a child's phone would mean building and shipping an actual native app with special entitlements, plus a real server so the parent and child devices can sync — a much bigger project than a single web page.</p>
+    <p>The good news: Apple already built real, free enforcement into every iPhone.</p>
+    <ol>
+      <li>On the child's iPhone: Settings → Screen Time → Turn On Screen Time.</li>
+      <li>Choose "This is My Child's iPhone" (or set it up through Family Sharing from your own phone).</li>
+      <li>Set App Limits, Downtime, and Communication Limits — these actually block or gray out apps device-side, no third-party app required.</li>
+      <li>Under Content &amp; Privacy Restrictions, control explicit content, purchases, and web access directly.</li>
+      <li>Everything syncs back to your phone automatically through Family Sharing, so you can adjust limits remotely.</li>
+    </ol>
+    <p>If you want something with more automatic monitoring (message scanning, location geofencing, cross-platform support), that's the territory of paid services like Qustodio, Bark, or Google Family Link — those work because they ship a real native app with a paid backend behind it, not a webpage.</p>
+  </section>
+
+  <a class="footer-link" href="./">← Back to Clean Slate</a>
+</main>
+<script>
+function pairDevice(){
+  const val = document.getElementById('pairInput').value.trim();
+  if(!/^\d{6}$/.test(val)){ alert('Enter the 6-digit code from the Kid app.'); return; }
+  localStorage.setItem('boundary_paired_code', val);
+  render();
+}
+function unpair(){
+  if(!confirm('Unpair this device?')) return;
+  localStorage.removeItem('boundary_paired_code');
+  render();
+}
+function saveChildName(v){ localStorage.setItem('boundary_child_name', v); }
+function saveAppToggle(el){
+  const state = JSON.parse(localStorage.getItem('boundary_app_toggles') || '{}');
+  state[el.dataset.app] = el.checked;
+  localStorage.setItem('boundary_app_toggles', JSON.stringify(state));
+}
+function saveDowntime(){
+  localStorage.setItem('boundary_downtime', JSON.stringify({
+    start: document.getElementById('downtimeStart').value,
+    end: document.getElementById('downtimeEnd').value
+  }));
+}
+function saveRestrictions(){
+  localStorage.setItem('boundary_restrictions', JSON.stringify({
+    explicit: document.getElementById('restExplicit').checked,
+    purchases: document.getElementById('restPurchases').checked,
+    web: document.getElementById('restWeb').checked
+  }));
+}
+function render(){
+  const paired = localStorage.getItem('boundary_paired_code');
+  document.getElementById('pairCard').style.display = paired ? 'none' : 'block';
+  document.getElementById('dashboard').style.display = paired ? 'block' : 'none';
+  if(paired){
+    document.getElementById('childName').value = localStorage.getItem('boundary_child_name') || '';
+    const toggles = JSON.parse(localStorage.getItem('boundary_app_toggles') || '{}');
+    document.querySelectorAll('[data-app]').forEach(el=>{
+      if(el.dataset.app in toggles) el.checked = toggles[el.dataset.app];
+    });
+    const downtime = JSON.parse(localStorage.getItem('boundary_downtime') || 'null');
+    if(downtime){
+      document.getElementById('downtimeStart').value = downtime.start;
+      document.getElementById('downtimeEnd').value = downtime.end;
+    }
+    const rest = JSON.parse(localStorage.getItem('boundary_restrictions') || 'null');
+    if(rest){
+      document.getElementById('restExplicit').checked = rest.explicit;
+      document.getElementById('restPurchases').checked = rest.purchases;
+      document.getElementById('restWeb').checked = rest.web;
+    }
+  }
+}
+render();
+</script>
+</body>
+</html>
