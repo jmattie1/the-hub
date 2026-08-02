@@ -1523,13 +1523,21 @@ function paginateHomeGrid(){
     pager.appendChild(page);
   }
   grid.appendChild(pager);
-  renderPageDots(pager);
   if(dockTiles.length){
     const dock = document.createElement('div');
     dock.className = 'ios-dock';
     dockTiles.forEach(t=>dock.appendChild(t));
     grid.appendChild(dock);
   }
+  /* CSS align-items/align-self:stretch doesn't reliably resolve a definite
+     cross-size here (a grid-display flex item, several nested flex levels
+     deep) across browsers — it silently falls back to shrink-to-content,
+     leaving rows clumped at the top instead of spread across the screen. A
+     direct pixel height, measured now that the pager is actually laid out
+     and sized by its own flex-grow, is what actually makes it stretch. */
+  const pagerHeight = pager.clientHeight;
+  pager.querySelectorAll('.home-page').forEach(p=>{ p.style.height = pagerHeight + 'px'; });
+  renderPageDots(pager);
 }
 function renderPageDots(pager){
   const pages = [...pager.querySelectorAll('.home-page')];
