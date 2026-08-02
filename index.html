@@ -127,19 +127,49 @@
   body.ios-mode .tile:active{background:none;}
   body.ios-mode .tile svg{width:60px;height:60px;background:var(--paper2);border:2px solid var(--ink);
     border-radius:24%;padding:11px;box-sizing:border-box;}
-  body.ios-mode .app-icon-img{width:60px;height:60px;border-radius:24%;}
+  body.ios-mode .app-icon-img{width:60px;height:60px;border-radius:24%;background:var(--paper2);
+    border:2px solid var(--ink);padding:9px;box-sizing:border-box;object-fit:contain;}
   body.ios-mode .app-icon-circle{width:60px;height:60px;font-size:24px;border-radius:24%;}
   body.ios-mode .tile span{font-size:12.5px;margin-top:4px;}
   body.ios-mode .tile-badge{top:-4px;right:2px;}
   .grid.paged{display:block;}
+  /* full-height layout: the home view becomes a column that's at least as
+     tall as the screen, so a page's icon rows spread out top-to-bottom like
+     a real home screen instead of clumping at the top with dead space below,
+     and there's always room reserved at the bottom for the fixed Dock. */
+  body.ios-mode #view-home.active{
+    display:flex;flex-direction:column;
+    min-height:calc(100vh - env(safe-area-inset-top, 0px) - 36px);
+    padding-bottom:112px;
+  }
+  body.ios-mode #view-home .grid.paged{flex:1;display:flex;flex-direction:column;}
+  body.ios-mode #view-home .home-pager{flex:1;}
   .home-pager{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
     scrollbar-width:none;}
   .home-pager::-webkit-scrollbar{display:none;}
-  .home-page{flex:0 0 100%;display:grid;grid-template-columns:repeat(var(--ios-cols,4),1fr);
-    grid-auto-rows:min-content;gap:24px 6px;scroll-snap-align:start;align-content:start;padding:4px 2px 10px;}
+  .home-page{flex:0 0 100%;height:100%;display:grid;grid-template-columns:repeat(var(--ios-cols,4),1fr);
+    grid-auto-rows:min-content;gap:20px 6px;align-content:space-evenly;scroll-snap-align:start;
+    padding:6px 2px 10px;}
   .page-dots{display:flex;justify-content:center;gap:6px;margin-top:6px;}
   .page-dots .dot{width:6px;height:6px;border-radius:50%;background:var(--ink-soft);opacity:.4;}
   .page-dots .dot.active{opacity:1;background:var(--ink);}
+  /* the Dock: fixed to the bottom of the screen, holds the same 4 tile
+     elements across every page (moved there, not duplicated), exactly like
+     Phone/Safari/Messages/Music sit outside the paging area on a real iPhone. */
+  .ios-dock{
+    display:none;position:fixed;left:0;right:0;bottom:0;z-index:20;
+    max-width:480px;margin:0 auto;justify-content:space-around;align-items:flex-start;
+    padding:10px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);
+    background:var(--paper2);border-top:2px solid var(--ink);
+  }
+  body.ios-mode .ios-dock{display:flex;}
+  body.ios-mode.theme-glass .ios-dock{
+    background:rgba(255,255,255,0.22);
+    background:color-mix(in srgb, var(--paper) 58%, transparent);
+    backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);
+    border-top:1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  }
+  .ios-dock .tile span{display:none;}
   section.card{border:2px solid var(--ink);border-radius:18px;padding:16px;margin-bottom:16px;background:var(--paper2);}
   section.card h2{margin:0 0 10px;font-size:18px;font-weight:400;border-bottom:1px solid var(--line);padding-bottom:8px;}
   .list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);}
@@ -1025,6 +1055,29 @@ function openTesla(){ launchApp('tesla://', 'https://www.tesla.com/'); }
 function openGoogle(){ launchApp('https://www.google.com/', null); }
 
 /* ---------- app store: search & add custom app tiles ---------- */
+/* Apple's real App Store titles almost never match our catalog's clean names
+   exactly — "PayPal" ships as "PayPal - Send, Shop, Manage", "WhatsApp" ships
+   as "WhatsApp Messenger", etc. An exact-string match against those missed
+   almost every favorite, silently downgrading it to a no-scheme "open the App
+   Store page" entry — which is why tapping an added app was landing on the
+   App Store instead of opening it. This strips marketing taglines/qualifiers
+   before comparing so "PayPal - Send, Shop, Manage" still matches "PayPal". */
+function normalizeAppName(s){
+  return (s || '')
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, '')
+    .split(/[-:–—]/)[0]
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
+}
+function findKnownApp(trackName){
+  const target = normalizeAppName(trackName);
+  if(!target) return null;
+  return APP_CATALOG.find(a=>{
+    const base = normalizeAppName(a.name);
+    return base && (base === target || target.startsWith(base) || base.startsWith(target));
+  });
+}
 const APP_CATALOG = [
   {name:'Instagram', scheme:'instagram://', url:'https://instagram.com', icon:'<rect x="10" y="10" width="28" height="28" rx="9" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="24" cy="24" r="7" fill="none" stroke="var(--ink)" stroke-width="2.2"/><circle cx="32" cy="16" r="1.6" fill="var(--ink)"/>'},
   {name:'X (Twitter)', scheme:'twitter://', url:'https://twitter.com', icon:'<line x1="12" y1="12" x2="36" y2="36" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/><line x1="36" y1="12" x2="12" y2="36" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>'},
@@ -1055,6 +1108,24 @@ const APP_CATALOG = [
 function getCustomApps(){ return JSON.parse(localStorage.getItem('hub_custom_apps') || '[]'); }
 function saveCustomApps(list){ localStorage.setItem('hub_custom_apps', JSON.stringify(list)); }
 function isAppAdded(name){ return getCustomApps().some(a=>a.name===name); }
+/* one-time repair for apps that got added back when the exact-name matching
+   bug above was still live — upgrades them to their real catalog entry
+   (scheme + pencil icon) if one now matches, without losing any real icon
+   they'd already fetched. Safe to run every load; it's a no-op once fixed. */
+function repairCustomApps(){
+  const list = getCustomApps();
+  let changed = false;
+  const fixed = list.map(app=>{
+    if(app.scheme) return app;
+    const known = findKnownApp(app.name);
+    if(known){
+      changed = true;
+      return Object.assign({}, known, { iconImg: app.iconImg || known.iconImg });
+    }
+    return app;
+  });
+  if(changed) saveCustomApps(fixed);
+}
 
 function addLiveApp(name){
   const app = lastStoreResults[name] || APP_CATALOG.find(a=>a.name===name);
@@ -1092,14 +1163,14 @@ function launchCustomApp(name){
 function tileIconHtml(app){
   const wantReal = matchIconsOn();
   /* the toggle is meant to be a real either/or: ON shows the app's actual
-     icon (fetching it lazily if we don't have it yet), OFF always shows
-     Slate's own pencil version (or a letter if there isn't one). Previously
-     the last line here fell through to the real image whenever one existed,
-     which meant apps added via live search — which already arrive with a
-     real icon and no hand-drawn one — never responded to the toggle at all. */
+     icon — run through an outline conversion so it still reads as one of
+     Slate's own pencil-style icons instead of a jarring full-color logo —
+     fetching/converting it lazily if we don't have it yet. OFF always shows
+     Slate's hand-drawn version (or a letter if there isn't one). */
   if(wantReal){
-    if(app.iconImg) return `<img class="app-icon-img" src="${app.iconImg}" alt="">`;
+    if(app.iconOutline) return `<img class="app-icon-img" src="${app.iconOutline}" alt="">`;
     ensureRealIcon(app);
+    if(app.iconImg) return `<img class="app-icon-img" src="${app.iconImg}" alt="">`;
     if(app.icon) return `<svg viewBox="0 0 48 48">${app.icon}</svg>`;
     return `<div class="app-icon-circle">${escapeHtml(app.name.charAt(0).toUpperCase())}</div>`;
   }
@@ -1152,7 +1223,7 @@ async function searchAppStore(q){
     const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(q) + '&country=us&entity=software&limit=25');
     const data = await res.json();
     const results = (data.results || []).map(r=>{
-      const known = APP_CATALOG.find(a=>a.name.toLowerCase() === (r.trackName||'').toLowerCase());
+      const known = findKnownApp(r.trackName);
       return known || { name: r.trackName, scheme: null, url: r.trackViewUrl, iconImg: r.artworkUrl60, trackId: r.trackId };
     });
     renderStoreList(results);
@@ -1403,16 +1474,25 @@ function runPulldownAction(){
   if(action === 'notes'){ openNotesApp(); return; }
   if(action === 'camera'){ const label = document.querySelector('label[for="cameraInput"]'); if(label) label.click(); return; }
 }
-/* ---------- iOS mode: fold the flat tile list into swipeable, dot-indicated pages ---------- */
+/* ---------- iOS mode: fold the flat tile list into swipeable, dot-indicated
+   pages, plus a fixed Dock holding a few tiles that stay put across pages ---------- */
 const IOS_PAGE_ROWS = 4, IOS_PAGE_COLS = 4;
+const IOS_DOCK_IDS = [
+  "builtin:openView('phone')",
+  "builtin:openMessagesApp()",
+  "builtin:cameraInput",
+  "builtin:openView('appsettings')"
+];
 function flattenHomeGrid(){
   const grid = document.getElementById('homeGrid');
   if(!grid) return;
   const pager = grid.querySelector('.home-pager');
-  if(!pager) { grid.classList.remove('paged'); return; }
+  const dock = grid.querySelector('.ios-dock');
+  if(!pager && !dock){ grid.classList.remove('paged'); return; }
   const tiles = [...grid.querySelectorAll('.tile')];
   tiles.forEach(t=>grid.appendChild(t));
-  pager.remove();
+  if(pager) pager.remove();
+  if(dock) dock.remove();
   const dots = document.getElementById('pageDots');
   if(dots) dots.remove();
   grid.classList.remove('paged');
@@ -1422,10 +1502,17 @@ function paginateHomeGrid(){
   if(!grid) return;
   flattenHomeGrid();
   if(!iosModeOn()) return;
-  const tiles = [...grid.querySelectorAll('.tile')].filter(t=>t.style.display !== 'none');
+  let tiles = [...grid.querySelectorAll('.tile')].filter(t=>t.style.display !== 'none');
   if(!tiles.length) return;
   grid.classList.add('paged');
   grid.style.setProperty('--ios-cols', IOS_PAGE_COLS);
+  /* pull the Dock's tiles out of the paginated pool first — these are the
+     same real DOM nodes (same data-tile-id, same handlers), just relocated,
+     so hide/restore/drag-reorder all keep working on them unchanged. */
+  const dockTiles = IOS_DOCK_IDS
+    .map(id=>tiles.find(t=>t.getAttribute('data-tile-id') === id))
+    .filter(Boolean);
+  tiles = tiles.filter(t=>!dockTiles.includes(t));
   const perPage = IOS_PAGE_COLS * IOS_PAGE_ROWS;
   const pager = document.createElement('div');
   pager.className = 'home-pager';
@@ -1437,6 +1524,12 @@ function paginateHomeGrid(){
   }
   grid.appendChild(pager);
   renderPageDots(pager);
+  if(dockTiles.length){
+    const dock = document.createElement('div');
+    dock.className = 'ios-dock';
+    dockTiles.forEach(t=>dock.appendChild(t));
+    grid.appendChild(dock);
+  }
 }
 function renderPageDots(pager){
   const pages = [...pager.querySelectorAll('.home-page')];
@@ -1504,23 +1597,92 @@ function syncAppearanceControls(){
    render — this module-level set is what actually prevents piling up
    duplicate in-flight fetches for the same app. */
 const _fetchingIconNames = new Set();
+function hexToRgb(hex){
+  let h = (hex || '').replace('#','');
+  if(h.length === 3) h = h.split('').map(c=>c+c).join('');
+  const num = parseInt(h, 16);
+  if(isNaN(num)) return {r:35, g:35, b:35};
+  return { r:(num>>16)&255, g:(num>>8)&255, b:num&255 };
+}
+function currentInkHex(){
+  return (getComputedStyle(document.documentElement).getPropertyValue('--ink') || '#232323').trim();
+}
+/* Turns a real app icon into a simple ink-colored line outline (Sobel edge
+   detection over a downscaled canvas) so "real" icons still read as one of
+   Slate's own hand-drawn tiles instead of a jarring full-color logo. Apple's
+   artwork CDN sends proper CORS headers, so this canvas readback works. */
+async function makeOutlineIcon(url){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = ()=>{
+      try{
+        const size = 64;
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, size, size);
+        const src = ctx.getImageData(0, 0, size, size).data;
+        const gray = new Float32Array(size * size);
+        for(let i=0; i<size*size; i++){
+          gray[i] = 0.299*src[i*4] + 0.587*src[i*4+1] + 0.114*src[i*4+2];
+        }
+        const gx = [-1,0,1,-2,0,2,-1,0,1], gy = [-1,-2,-1,0,0,0,1,2,1];
+        const mags = new Float32Array(size * size);
+        let maxMag = 1;
+        for(let y=1; y<size-1; y++){
+          for(let x=1; x<size-1; x++){
+            let sx=0, sy=0, k=0;
+            for(let j=-1; j<=1; j++){
+              for(let i=-1; i<=1; i++){
+                const v = gray[(y+j)*size + (x+i)];
+                sx += v*gx[k]; sy += v*gy[k]; k++;
+              }
+            }
+            const mag = Math.sqrt(sx*sx + sy*sy);
+            mags[y*size + x] = mag;
+            if(mag > maxMag) maxMag = mag;
+          }
+        }
+        const out = ctx.createImageData(size, size);
+        const ink = hexToRgb(currentInkHex());
+        for(let p=0; p<size*size; p++){
+          const m = mags[p] / maxMag;
+          const alpha = m > 0.16 ? Math.min(255, Math.round(m * 255 * 1.5)) : 0;
+          out.data[p*4] = ink.r; out.data[p*4+1] = ink.g; out.data[p*4+2] = ink.b; out.data[p*4+3] = alpha;
+        }
+        ctx.clearRect(0, 0, size, size);
+        ctx.putImageData(out, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = ()=>resolve(null);
+    img.src = url;
+  });
+}
 async function ensureRealIcon(app){
-  if(app.iconImg || _fetchingIconNames.has(app.name)) return;
+  if(app.iconOutline || _fetchingIconNames.has(app.name)) return;
   _fetchingIconNames.add(app.name);
   try{
-    const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(app.name) + '&country=us&entity=software&limit=1');
-    const data = await res.json();
-    const hit = data.results && data.results[0];
-    if(hit && hit.artworkUrl60){
+    let artworkUrl = app.iconImg;
+    if(!artworkUrl){
+      const res = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(app.name) + '&country=us&entity=software&limit=1');
+      const data = await res.json();
+      const hit = data.results && data.results[0];
+      artworkUrl = hit && (hit.artworkUrl100 || hit.artworkUrl60);
+    }
+    if(artworkUrl){
+      const outline = await makeOutlineIcon(artworkUrl);
       const list = getCustomApps();
       const idx = list.findIndex(a=>a.name===app.name);
-      if(idx !== -1 && !list[idx].iconImg){
-        list[idx].iconImg = hit.artworkUrl60;
+      if(idx !== -1){
+        if(!list[idx].iconImg) list[idx].iconImg = artworkUrl;
+        if(outline) list[idx].iconOutline = outline;
         saveCustomApps(list);
         renderCustomTiles();
       }
     }
-  }catch(e){ /* silent — keep the pencil icon */ }
+  }catch(e){ /* silent — keep whatever icon we already had */ }
   finally{ _fetchingIconNames.delete(app.name); }
 }
 
@@ -1880,6 +2042,7 @@ function escapeHtml(s){
 }
 
 initHomeTiles();
+repairCustomApps();
 renderCustomTiles();
 </script>
 </body>
